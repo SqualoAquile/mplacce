@@ -25,14 +25,14 @@
 
     <style>
         body {
-            color: #140086 ;
+            color: #01ABAA ;
         }
         .btn-primary {
-            background-color: #140086;
+            background-color: #01ABAA;
             color: #FFF ;
         }
         .btn-primary:hover{
-            background-color: #0c0755;
+            background-color: #333;
         }
     </style>
 
