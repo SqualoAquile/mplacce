@@ -1,11 +1,12 @@
 <?php
-class Clientes extends model {
+class Agendamentos extends model {
 
-    protected $table = "clientes";
+    protected $table = "agendamentos";
     protected $permissoes;
     protected $shared;
 
     public function __construct() {
+        
         $this->permissoes = new Permissoes();
         $this->shared = new Shared($this->table);
     }
@@ -15,12 +16,11 @@ class Clientes extends model {
         $arrayAux = array();
 
         $id = addslashes(trim($id));
-        $sql = "SELECT * FROM " . $this->table . " WHERE id='$id' AND situacao = 'ativo'";
+        $sql = "SELECT * FROM " . $this->table . " WHERE id='$id' AND situacao = 'ativo'";      
         $sql = self::db()->query($sql);
 
         if($sql->rowCount()>0){
             $array = $sql->fetch(PDO::FETCH_ASSOC);
-            // print_r($array); exit;
             $array = $this->shared->formataDadosDoBD($array);
         }
         
@@ -39,11 +39,10 @@ class Clientes extends model {
         $values = "'" . implode("','", array_values($this->shared->formataDadosParaBD($request))) . "'";
 
         $sql = "INSERT INTO " . $this->table . " (" . $keys . ") VALUES (" . $values . ")";
-
+        
         self::db()->query($sql);
 
         $erro = self::db()->errorInfo();
-        $lastInsertId = self::db()->lastInsertId();
 
         if (empty($erro[2])){
 
@@ -59,37 +58,8 @@ class Clientes extends model {
         }
     }
 
-    public function adicionarAjax($request) {
-        
-        $ipcliente = $this->permissoes->pegaIPcliente();
-        $request["alteracoes"] = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - CADASTRO";
-        
-        $request["situacao"] = "ativo";
-
-        $keys = implode(",", array_keys($request));
-
-        $values = "'" . implode("','", array_values($this->shared->formataDadosParaBD($request))) . "'";
-
-        $sql = "INSERT INTO " . $this->table . " (" . $keys . ") VALUES (" . $values . ")";
-        
-        self::db()->query($sql);
-
-        $erro = self::db()->errorInfo();
-        $lastInsertId = self::db()->lastInsertId();
-
-        $get = "SELECT * FROM " . $this->table . " WHERE id='$lastInsertId' AND situacao = 'ativo'";
-        $get = self::db()->query($get);
-
-        $return = [];
-        if($get->rowCount()>0){
-            $return = $get->fetch(PDO::FETCH_ASSOC);
-        }
-        
-        return $return;
-    }
-
     public function editar($id, $request) {
-        
+
         if(!empty($id)){
 
             $id = addslashes(trim($id));
@@ -176,46 +146,12 @@ class Clientes extends model {
         }
     }
 
-    public function buscaAniversariantes($interval_datas){
-        
-        $array = array();
-        if(!empty($interval_datas) && isset($interval_datas)){
-            
-            if(count($interval_datas) == 1){
-                $dt1 = 	$interval_datas[0];
-                $dt2 =  $interval_datas[0];
-            }else{
-                $dt1 = $interval_datas[0];
-                $dt2 = $interval_datas[count($interval_datas)-1];
-            }
-
-            
-            $dt1 = explode('-', $dt1);
-            $dt2 = explode('-', $dt2);
-
-            // busca as despesas relacionadas a O.S. lançadas no fluxo de caixa
-            $sql1 = "SELECT `id`, `nome`, `data_nascimento`, `celular`, `email` FROM `clientes` WHERE situacao = 'ativo' AND MONTH(data_nascimento) IN('$dt1[1]', '$dt2[1]') ORDER BY MONTH(data_nascimento), DAY(data_nascimento) ASC";
-
-            $sql1 = self::db()->query($sql1);
-            $anivers = array();
-
-            if($sql1->rowCount() > 0){  
-                $anivers = $sql1->fetchAll(PDO::FETCH_ASSOC);
-            }
-           
-            $array['anivers'] = $anivers;
-        }      
-
-       return $array;
-    }
-    public function buscaClientes($termo){
-        // print_r($termo); exit;
+    public function nomeClientes($termo){
         // echo "aquiiii"; exit;
         $array = array();
         // 
-        $sql1 = "SELECT * FROM `clientes` WHERE situacao = 'ativo' AND ( nome LIKE '%$termo%' OR celular LIKE '%$termo%' OR cpf_cnpj LIKE '%$termo%' ) ORDER BY nome ASC";
+        $sql1 = "SELECT `id`, `nome` FROM `generico` WHERE situacao = 'ativo' AND nome LIKE '%$termo%' ORDER BY nome ASC";
 
-        // echo $sql1; exit;
         $sql1 = self::db()->query($sql1);
         $nomesAux = array();
         $nomes = array();
@@ -223,23 +159,92 @@ class Clientes extends model {
             
             $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
 
-            // print_r($nomesAux); exit;
             foreach ($nomesAux as $key => $value) {
                 $nomes[] = array(
                     "id" => $value["id"],
-                    "label" => $value["nome"]." -- ".$value["celular"],
-                    "value" => $value["nome"]." -- ".$value["celular"],
-                    "desc_servico" => $value['desc_servico'],
-                    "desc_produto" => $value['desc_produto'],
+                    "label" => $value["nome"],
+                    "value" => $value["nome"]
                 );     
             }
+
         }
 
-        //fazer foreach e criar um array que cada elemento tenha id: label: e value:
+        // fazer foreach e criar um array que cada elemento tenha id: label: e value:
         // print_r($nomes); exit; 
         $array = $nomes;
-        // $array = $nomesAux;
 
        return $array;
-    }    
+    }
+
+    public function adicionarEventos($requestCompleto) {
+        // print_r($requestCompleto); exit;
+        $request = $requestCompleto['eventos'];
+        $event = new Shared('eventos');
+
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $sql = '';
+        $qtdServicos = count($request);            
+
+        foreach ($request as $linha => $arrayRegistro) {
+
+            $arrayRegistro["alteracoes"] = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - CADASTRO";
+            $arrayRegistro["situacao"] = "ativo";
+            
+            // print_r($arrayRegistro); exit;
+            // $keys = implode(",", array_keys($arrayRegistro));
+            $keys = implode(",", array_keys($event->formataDadosParaBD2($arrayRegistro)));
+            // print_r($arrayRegistro); exit;
+            $values = "'" . implode("','", array_values($event->formataDadosParaBD2($arrayRegistro))) . "'";
+            // print_r($values); exit;
+            $sql .= "INSERT INTO eventos (" . $keys . ") VALUES (" . $values . ");";               
+        }
+
+        // print_r($request[0]['dt_inicio']); exit;
+        
+        $dtInicioAgnd = $request[0]['dt_inicio'];
+        $dtInicioAgnd = explode('/', $dtInicioAgnd);
+        $dtInicioAgnd = $dtInicioAgnd[2].'-'.$dtInicioAgnd[1].'-'.$dtInicioAgnd[0];
+        
+        $idClienteAgnd = $request[0]['id_cliente'];
+        $clienteAgnd = $request[0]['cliente'];
+        $servicosAgnd = $requestCompleto['servicos'];
+        $obsAgnd = $requestCompleto['obsAgnd'];
+        $alteracoesAgnd = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - CADASTRO";
+
+        self::db()->query('START TRANSACTION;');
+
+        self::db()->query($sql);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            $ultimoIdDepois = self::db()->lastInsertId();
+            $idservicos = '';
+            for($i=0; $i < $qtdServicos; $i++){
+                $idservicos .= intval($ultimoIdDepois - $i).','; 
+            }
+            $idservicos = substr($idservicos,0, strlen($idservicos) - 1);
+            // echo 'ids:    '. $idservicos; exit;   
+
+            $sqlA = "INSERT INTO agendamentos (id, dt_inicio, id_cliente, cliente, observacao, id_servicos, servicos, alteracoes, situacao) VALUES (DEFAULT,'$dtInicioAgnd','$idClienteAgnd','$clienteAgnd','$obsAgnd','$idservicos','$servicosAgnd','$alteracoesAgnd','ativo')";
+
+            self::db()->query($sqlA);
+            $erroA = self::db()->errorInfo();
+
+            if(  empty($erroA[2]) ){
+                self::db()->query('COMMIT;');
+                return true;
+
+            }else{
+
+                self::db()->query('ROLLBACK;');
+                return false;
+            }   
+
+        } else {
+
+            self::db()->query('ROLLBACK;');
+            return false;
+        }
+    }
 }

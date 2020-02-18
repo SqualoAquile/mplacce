@@ -1,8 +1,8 @@
 <?php
-class funcionariosController extends controller{
+class agendamentosController extends controller{
 
     // Protected - estas variaveis só podem ser usadas nesse arquivo
-    protected $table = "funcionarios";
+    protected $table = "agendamentos";
     protected $colunas;
     
     protected $model;
@@ -15,6 +15,7 @@ class funcionariosController extends controller{
         $this->shared = new Shared($this->table);
         $tabela = ucfirst($this->table);
         $this->model = new $tabela();
+        // print_r('teste'); exit;
         $this->usuario = new Usuarios();
     
         $this->colunas = $this->shared->nomeDasColunas();
@@ -32,7 +33,7 @@ class funcionariosController extends controller{
     }
      
     public function index() {
-
+        
         if(isset($_POST) && !empty($_POST)){ 
             
             $id = addslashes($_POST['id']);
@@ -52,6 +53,7 @@ class funcionariosController extends controller{
         $dados['infoUser'] = $_SESSION;
         $dados["colunas"] = $this->colunas;
         $dados["labelTabela"] = $this->shared->labelTabela();
+        
         $this->loadTemplate($this->table, $dados);
     }
     
@@ -63,18 +65,11 @@ class funcionariosController extends controller{
         }
         
         $dados['infoUser'] = $_SESSION;
-        
-        if(isset($_POST) && !empty($_POST)){ 
-            $this->model->adicionar($_POST);
-            header("Location: " . BASE_URL . "/" . $this->table);
-            exit;
+        $dados["colunas"] = $this->colunas;
+        $dados["viewInfo"] = ["title" => "Adicionar"];
+        $dados["labelTabela"] = $this->shared->labelTabela();
+        $this->loadTemplate($this->table . "-form", $dados);
 
-        }else{ 
-            $dados["colunas"] = $this->colunas;
-            $dados["viewInfo"] = ["title" => "Adicionar"];
-            $dados["labelTabela"] = $this->shared->labelTabela();
-            $this->loadTemplate($this->table . "-form", $dados);
-        }
     }
     
     public function editar($id) {
@@ -94,55 +89,15 @@ class funcionariosController extends controller{
         if(isset($_POST) && !empty($_POST)){
             $this->model->editar($id, $_POST);
             header("Location: " . BASE_URL . "/" . $this->table); 
-
+            exit;
+            
         }else{
-
-            $dados['folhas'] = $this->model->folhasFuncionario($id);
-            // print_r($dados['folhas']); exit;
             $dados["item"] = $this->model->infoItem($id); 
             $dados["colunas"] = $this->colunas;
-            // print_r($dados['colunas']); exit;
             $dados["viewInfo"] = ["title" => "Editar"];
             $dados["labelTabela"] = $this->shared->labelTabela();
             $this->loadTemplate($this->table . "-form", $dados); 
         }
     }
-
-    public function lerpdf($nomearq) {
-
-        if(in_array($this->table . "_edt", $_SESSION["permissoesUsuario"]) == false || empty($nomearq) || !isset($nomearq)){
-            header("Location: " . BASE_URL . "/" . $this->table); 
-            exit;
-
-        }else{
-
-            $file = BASE_URL . "/assets/pdf/";
-            $filename = $nomearq.".pdf";
-           
-            header('Content-type: application/pdf');
-            @readfile($file.$filename);
-            exit;   
-        }
-
-    }
-
-    // public function excluirpdf($idfunc, $nomearq, $nomeVisivel) {
-    //     echo $idfunc;
-    //     echo '<br><br>';
-    //     echo $nomearq; exit;
-
-    //     if(in_array($this->table . "_exc", $_SESSION["permissoesUsuario"]) == false || empty($nomearq) || !isset($nomearq)){
-    //         // echo 'aqui'; exit;
-    //         header("Location: " . BASE_URL . "/" . $this->table); 
-    //         exit;
-
-    //     }else{
-            
-    //         $this->model->excluirpdf($idfunc, $nomearq, $nomeVisivel);
-    //         header("Location: " . BASE_URL . "/" . $this->table . "/editar/". $idfunc);
-    //         exit;
-    //     } 
-    // }
-
 }   
 ?>

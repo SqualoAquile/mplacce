@@ -175,4 +175,57 @@ class Atividades extends model {
        return $array;
     }
 
+    public function buscarAgendas($request) {
+        $ativsPorProfissional = array();
+
+        // buscar os profssionais ativos
+        $profissionais = array();
+        $sql = "SELECT * FROM profissionais WHERE prof_ativo = 'SIM' AND situacao = 'ativo'";
+        $sql = self::db()->query($sql);
+        if($sql->rowCount()>0){
+            $profissionais = $sql->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // print_r($profissionais); exit;
+
+        $ativsPorProfissional = array();
+        $dtref = addslashes($request['dtref']);
+        
+        foreach ($profissionais as $chave => $valor) {
+            $sqlA = '';
+            $sqlA ="SELECT * FROM eventos WHERE dt_inicio = '$dtref' AND dt_fim = '$dtref' AND idprof = '$valor[id]' AND situacao = 'ativo' "; 
+
+            // echo $sqlA; exit;
+            $sqlA = self::db()->query($sqlA);
+
+            $ativsAux = array();
+            $ativs = array();
+
+            if($sqlA->rowCount()>0){
+                $ativsAux = $sqlA->fetchAll(PDO::FETCH_ASSOC);
+                //  print_r($ativsAux); exit;
+                foreach ($ativsAux as $key => $value) {
+                    // print_r($value); exit; 
+                    $ativs[] = array(
+                        "id" => $value["id"],
+                        "title" => $value["servico"].' '.$value["preferencia"],
+                        "start" => $value["dt_inicio"].' '.$value["hora_inicio"].':00',
+                        "end" => $value["dt_fim"].' '.$value["hora_fim"].':00',
+                        "color" => $value["cor"]
+                    ); 
+                }
+            }
+            if( count($ativs) > 0 ){
+                $ativsPorProfissional[] = array(
+                    "id" => $valor['id'],
+                    "nome" => $valor['nome'],
+                    "eventosDtRef" => $ativs
+                ); 
+            }
+            
+        }      
+        
+        // print_r($ativsPorProfissional); exit;
+        return $ativsPorProfissional; 
+    }
 }

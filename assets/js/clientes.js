@@ -1,6 +1,7 @@
-$(function () {
-    console.log('entrei aquiii')
+    $(function () {
+    
     var $cpf_cnpj = $('[name=cpf_cnpj]');
+    $('#pf').attr('checked', 'checked');
 
     //
     // Escuta o clique dos radios CPF/CPNJ pra mostra e esconder os inputs de CPF/CNPJ
@@ -10,12 +11,8 @@ $(function () {
             if ($(this).is(':checked')) {
 
                 var $input = $('[name=cpf_cnpj]'),
-                    $contatosForm = $('#contatos-form'),
-                    $hiddenContatos = $('[name=contatos]'),
                     $nome = $('[name=nome]'),
                     $dtNascimento = $('[name=data_nascimento]'),
-                    $razaoSocial = $('[name=razao_social]');
-                    $telefone = $('[name=telefone]');
                     $celular = $('[name=celular]');
                 
                 $input.removeClass('is-valid is-invalid');
@@ -32,36 +29,10 @@ $(function () {
                         .find('span')
                         .text('CNPJ');
 
-                    // Telefone é obrigatório para PJ, celular não
-                    $telefone
-                        .attr('required', 'required')
-                        .siblings('label')
-                        .addClass('font-weight-bold')
-                        .find('i')
-                        .show();
-
-                    $celular
-                        .removeAttr('required')
-                        .siblings('label')
-                        .removeClass('font-weight-bold')
-                        .find('i')
-                        .hide();
-
-                    $contatosForm.show();
-                    $hiddenContatos.val($hiddenContatos.attr('data-anterior'));
-
                     $nome
                         .siblings('label')
                         .find('span')
                         .text('Nome Fantasia');
-
-                    $razaoSocial
-                        .parents('[class^=col-]')
-                        .show();
-
-                    $dtNascimento
-                        .parents('[class^=col-]')
-                        .show();
 
                 } else {
                     
@@ -70,49 +41,11 @@ $(function () {
                         .siblings('label')
                         .find('span')
                         .text('CPF');
-                    
-                    $telefone
-                        .removeAttr('required')
-                        .siblings('label')
-                        .removeClass('font-weight-bold')
-                        .find('i')
-                        .hide();
-                        
-
-                    // Celular é obrigatório para PF, telefone não
-                    $celular
-                        .attr('required', 'required')
-                        .siblings('label')  
-                        .addClass('font-weight-bold')
-                        .find('i')
-                        .show();             
-
-                    $contatosForm.hide();
-                    $contatosForm[0].reset();
-
-                    $contatosForm
-                        .find('.disabled')
-                        .removeClass('disabled')
-
-                    $('table#contatos thead tr[role=form]')
-                        .removeAttr('data-current-id')
-                        .find('[data-anterior]')
-                        .removeAttr('data-anterior');
-
-                    $hiddenContatos.val('');
 
                     $nome
                         .siblings('label')
                         .find('span')
                         .text('Nome');
-
-                    $razaoSocial
-                        .parents('[class^=col-]')
-                        .hide();
-
-                    $dtNascimento
-                        .parents('[class^=col-]')
-                        .show();
 
                 }
             }

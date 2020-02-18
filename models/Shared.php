@@ -821,8 +821,10 @@ class Shared extends model {
         
         if(isset($registro) && !empty($registro)){
             $array = array();
+            // print_r($registro); exit;
             $nomeColunas = $this->nomeDasColunas();
-            
+            // print_r($nomeColunas); exit;
+
             $colunasAux = array();
             $chavesRegistro = array();
             foreach ($nomeColunas as $key => $value) {
@@ -875,10 +877,13 @@ class Shared extends model {
     }
 
     public function formataDadosDoBD($registro) {
+        
         if(isset($registro) && !empty($registro)){
             $array = array();
             $nomeColunas = $this->nomeDasColunas();        // busca o nome dos campos das colunas para ver qual o tipo a ser formatado
             
+            // print_r($registro); exit;
+            print_r($nomeColunas); exit;
             $i=0;
             foreach ($registro as $chave => $valor) {
 
@@ -895,7 +900,8 @@ class Shared extends model {
                         $array[$chave]  = number_format(floatval(addslashes($registro[$chave])),2,',','.');
 
                     }elseif (substr_count($nomeColunas[$i]['Type'], "int") > 0 ){
-                        // formatação de inteiros    
+                        // formatação de inteiros
+                        print_r($registro[$chave]);    
                         $array[$chave] = intval(addslashes($registro[$chave]));
 
                     }else{

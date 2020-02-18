@@ -12,10 +12,10 @@ class ajaxController extends controller{
     $user = new Usuarios();
 
     $this->parametros = new Parametros;
-    $this->servicos = new Servicos;
-    $this->clientes = new Clientes;
-    $this->orcamentos = new Orcamentos;
-    $this->ordemservico = new Ordemservico;
+    // $this->servicos = new Servicos;
+    // $this->clientes = new Clientes;
+    // $this->orcamentos = new Orcamentos;
+    // $this->ordemservico = new Ordemservico;
 
     //verifica se está logado
     if($user->isLogged() == false){
@@ -516,6 +516,12 @@ class ajaxController extends controller{
     }
   }
 
+  public function buscarTodosParametros() {
+    if (isset($_POST) && !empty($_POST)) {
+      echo json_encode($this->parametros->buscaParametros());
+    }
+  }
+
   //
   // DESENVOLVIMENTO
   //
@@ -830,7 +836,98 @@ class ajaxController extends controller{
     }
     echo json_encode($dados);
   }
+  /////////////////////// PROFISSIONAIS
+  public function buscaServicos(){
+    $dados = array();
+    if(isset($_POST) && !empty($_POST)){
+      
+      $termo = trim(addslashes($_POST['term']));
+      $prof = new Profissionais();
+      $dados = $prof->buscaServicos($termo);
+      
+    }
+    echo json_encode($dados);
+  }
 
+  public function buscaGruposDeServicos(){
+    $dados = array();
+    if(isset($_POST) && !empty($_POST)){
+      $prof = new Profissionais();
+      $dados = $prof->buscaGruposDeServicos();
+      
+    }
+    echo json_encode($dados);
+  }
+
+  public function buscaServicosGrupo(){
+    $dados = array();
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $grupo = trim(addslashes($_POST['grupo']));
+      $prof = new Profissionais();
+      $dados = $prof->buscaServicosGrupo($grupo);
+      
+    }
+    echo json_encode($dados);
+  }
+  
+  //////////////////////////////////////
+
+  //////////////////////////////// AGENDAMENTOS
+  public function buscaClientes(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      
+      $termo = trim(addslashes($_POST['term']));
+      $cli = new Clientes();
+      $dados = $cli->buscaClientes($termo);
+      
+    }
+    echo json_encode($dados);
+  }
+
+  
+  public function buscaProfissionais(){
+    $dados = array();
+    // print_r($_POST); exit;
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $termo = trim(addslashes($_POST['term']));
+      $prof = new Profissionais();
+      $dados = $prof->buscaProfissionais($termo);
+      
+    }
+    echo json_encode($dados);
+  }
+
+  public function adicionarEventos(){
+    $dados = array();
+    // print_r($_POST); exit;
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $agnd = new Agendamentos();
+      $dados = $agnd->adicionarEventos($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+///////////////////////////////////////////////////////////////
+/////////////////// AGENDA //////////
+
+  public function buscarAgendas(){
+    $dados = array();
+    // print_r($_POST); exit;
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $ativs = new Atividades();
+      $dados = $ativs->buscarAgendas($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+
+  /////////////////////////////////////////////
   public function buscaEmaileID(){
     $dados = array();
     if(isset($_POST) && !empty($_POST)){

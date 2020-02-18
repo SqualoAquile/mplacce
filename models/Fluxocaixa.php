@@ -129,7 +129,7 @@ class Fluxocaixa extends model {
     }
 
     public function adicionar($request) {
-        // print_r($request); exit;
+        print_r($request); exit;
         $ipcliente = $this->permissoes->pegaIPcliente();
 
         $sql = '';

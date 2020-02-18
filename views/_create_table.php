@@ -201,7 +201,8 @@
                                     <option value="float" >Float</option>
                                     <option value="date" >Date</option>
                                     <option value="int" >Int</option>
-                                    <option value="text" >Text</option>                        
+                                    <option value="text" >Text</option>
+                                    <option value="text" >DateTime</option>                        
                                 </select>
                             </div>
                             <div class="col-lg-2 mb-2">
@@ -250,7 +251,8 @@
                                     <option value="cep"         >cep</option>                        
                                     <option value="porcentagem" >porcentagem</option>                        
                                     <option value="monetario"   >monetario</option>                        
-                                    <option value="numero"      >numero</option>                        
+                                    <option value="numero"      >numero</option>
+                                    <option value="hora"        >hora</option>                        
                                 </select>
                             </div>
                             <div class="col-lg-1 mb-2">

@@ -991,3 +991,18 @@ $(document)
                 .keyup();
         }
     });
+
+$(function () {
+
+    // validação específica de cada parâmetro
+
+    $('#hora_limite_operacao').on('blur', function(){
+        if( $(this).val() != '' ){
+            if( parseInt( $(this).val() ) > 23 ){
+                alert('A hora deve ser menor do que 24');
+                $(this).val('').blur();
+                return false;
+            }
+        }
+    });
+});    

@@ -19,30 +19,31 @@
                "link" => "/clientes"
             ],
             [
-               "text" => "Atividades",
+               "text" => "Profissionais",
                "icon" => "fas fa-users",
-               "permissao" => "atividades_ver",
-               "link" => "/atividades"
+               "permissao" => "profissionais_ver",
+               "link" => "/profissionais"
             ]
-            // ,
-            // [
-            //    "text" => "Ferramentas",
-            //    "icon" => "fas fa-users",
-            //    "permissao" => "funcionarios_ver",
-            //    "link" => "/funcionarios"
-            // ],
-            // [
-            //    "text" => "Itens CheckList Carros",
-            //    "icon" => "fas fa-users",
-            //    "permissao" => "servicos_ver",
-            //    "link" => "/servicos"
-            // ],
-            // [
-            //    "text" => "Produtos",
-            //    "icon" => "fas fa-boxes",
-            //    "permissao" => "produtos_ver",
-            //    "link" => "/produtos"
-            // ]
+            ,
+            [
+               "text" => "Serviços",
+               "icon" => "fas fa-boxes",
+               "permissao" => "servicos_ver",
+               "link" => "/servicos"
+            ],
+            [
+               "text" => "Agenda",
+               "icon" => "fas fa-calendar",
+               "permissao" => "atividades_ver",
+               "link" => "/atividades/adicionar"
+            
+            ],
+            [
+               "text" => "Agendamentos",
+               "icon" => "fas fa-boxes",
+               "permissao" => "agendamentos_ver",
+               "link" => "/agendamentos"
+            ]
          ]
       ]
       ,

@@ -609,6 +609,76 @@ $(function () {
         });
 
     //
+    // Campo Hora
+    //
+    $('[data-mascara_validacao="hora"]')
+        .mask('00:00')
+        .on('blur touchstart', function () {
+
+            var $this = $(this);
+            var valido = false;
+            var mensagem = '';
+            $this.removeClass('is-valid is-invalid');
+            $this.siblings('.invalid-feedback').remove();
+
+            if ($this.val()) {
+                if ($this.attr('data-anterior') != $this.val()) {
+                    if ($this.validationLength(5)) {
+                        // hora = 00:00 - h1h2:m1m2
+                        var hora = $this.val();
+                        var h1 = parseInt( hora.slice(0,1));
+                        var h2 = parseInt( hora.slice(1,2));
+                        var m1 = parseInt( hora.slice(3,4));
+                        // var m2 = parseInt( hora.slice(4,5));
+                        if( h1 > 2  ){
+                            console.log('invalidou h1 ')
+                            // Inválido
+                            valido = false;
+                            mensagem = 'O primeiro dígito deve ser menor ou igual a 2.';
+                        }else{
+                            // h1 é igual a  0, 1 ou 2
+                            if( h1 == 2 && ( h2 > 3 ) ){
+                                // Inválido
+                                valido = false;
+                                mensagem = 'O segundo dígito deve ser menor ou igual a 3.';
+
+                            }else{
+                                // h1 é valido e h2 é valido
+                                if( m1 > 5 ){
+                                    valido = false;
+                                    mensagem = 'O terceiro dígito deve ser menor ou igual a 5.';
+                                }else{
+                                    valido = true;
+                                } 
+                            }
+                        }
+
+                       
+                    }else {
+
+                        // Inválido
+                        valido = false;
+                        mensagem = 'Preencha o campo no formato: 00:00.';
+                    }
+                    
+                    if( valido == true ){
+                         // Valido
+                         $this.removeClass('is-invalid').addClass('is-valid');
+                         $this[0].setCustomValidity('');
+                         return;
+                    }else{
+                        // Inválido
+                        $this.removeClass('is-valid').addClass('is-invalid');
+                        // Função nativa javascript para setar campo com :valid :invalid
+                        $this[0].setCustomValidity('invalid');
+                        $this.after('<div class="invalid-feedback">'+mensagem+'</div>');
+                        return;
+                    }
+                }
+            }
+        });    
+        
+    //
     // Campo Sigla
     //
     $('[data-mascara_validacao="sigla"]')
@@ -855,7 +925,7 @@ $(function () {
     // Campo Comissão, Porcentagem 
     //
     $('[data-mascara_validacao="porcentagem"]')
-        .mask('00,00%', {
+        .mask('000,00%', {
             reverse: true
         })
         .on('blur touchstart', function () {

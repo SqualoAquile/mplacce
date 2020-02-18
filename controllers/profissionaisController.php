@@ -1,8 +1,8 @@
 <?php
-class servicosController extends controller{
+class profissionaisController extends controller{
 
     // Protected - estas variaveis só podem ser usadas nesse arquivo
-    protected $table = "servicos";
+    protected $table = "profissionais";
     protected $colunas;
     
     protected $model;

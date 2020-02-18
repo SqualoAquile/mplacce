@@ -192,4 +192,71 @@ $(function () {
 
         comparar($custo, $preco);
     });
+
+    $("#porcent_casa").on('blur',function(){
+        var $pcasa = $("#porcent_casa");
+        var $pprof = $("#porcent_prof");
+        var npcasa = $("#porcent_casa").val();
+            npcasa = npcasa.replace('%','');
+            npcasa = npcasa.replace(',','.');
+            npcasa = parseFloat(npcasa) / 100;
+
+        var npprof = $("#porcent_prof").val();
+            npprof = npprof.replace('%','');
+            npprof = npprof.replace(',','.');
+            npprof = parseFloat(npprof) / 100;
+
+        if( npcasa > 1 ){
+            $pcasa.val("").blur();
+            return false;
+        }
+
+        if ( $pcasa.val() == '' ) {
+            if ( $pprof.val() == '' ){
+                return false;
+            }else{
+                $pcasa.val( floatParaPadraoBrasileiro( parseFloat(( 1 - npprof ) * 100) )+'%' );
+            }    
+        }else {
+            
+            $pprof.val( floatParaPadraoBrasileiro( parseFloat(( 1 - npcasa ) * 100) )+'%' );    
+        }
+        
+    });
+    
+    $("#porcent_prof").on('blur',function(){
+        var $pcasa = $("#porcent_casa");
+        var $pprof = $("#porcent_prof");
+        var npcasa = $("#porcent_casa").val();
+            npcasa = npcasa.replace('%','');
+            npcasa = npcasa.replace(',','.');
+            npcasa = parseFloat(npcasa) / 100;
+
+        var npprof = $("#porcent_prof").val();
+            npprof = npprof.replace('%','');
+            npprof = npprof.replace(',','.');
+            npprof = parseFloat(npprof) / 100;
+
+        if( npprof > 1 ){
+            $pprof.val("").blur();
+            return false;
+        }
+
+        if ( $pprof.val() == '' ) {
+            if ( $pcasa.val() == '' ){
+                return false;
+            }else{
+                $pprof.val( floatParaPadraoBrasileiro( parseFloat(( 1 - npcasa ) * 100) )+'%' );
+            }    
+        }else {
+            
+            $pcasa.val( floatParaPadraoBrasileiro( parseFloat(( 1 - npprof ) * 100) )+'%' );    
+        }
+        
+    });
+
+    $('#val_fix_casa').val('0,00');
+    $('#val_fix_prof').val('0,00');
+    $('#val_fix_prod').val('0,00');
+    $('#porcent_prod').val('0,00%');
 });
