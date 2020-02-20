@@ -883,7 +883,7 @@ class Shared extends model {
             $nomeColunas = $this->nomeDasColunas();        // busca o nome dos campos das colunas para ver qual o tipo a ser formatado
             
             // print_r($registro); exit;
-            print_r($nomeColunas); exit;
+            // print_r($nomeColunas); exit;
             $i=0;
             foreach ($registro as $chave => $valor) {
 

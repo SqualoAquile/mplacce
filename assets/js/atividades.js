@@ -1,130 +1,20 @@
-
-document.addEventListener('DOMContentLoaded', function() {
-    // var calendarEl = document.getElementById('calendario');
-    // var calendarEl1 = document.getElementById('calendario1');
-
-    // var calendar = new FullCalendar.Calendar(calendarEl, {
-    //     defaultDtae: new Date(),
-    //     plugins: [ 'dayGrid', 'interaction', 'list', 'timeGrid' ],
-    //     defaultView: 'timeGridDay',
-    //     header: {
-    //         left: '',
-    //         center: '',
-    //         right: ''    
-    //     },
-    //     editable: true,
-    //     droppable: true,
-    //     allDaySlot: false,
-    //     events:[
-    //         {
-    //             title: 'Meu Evento 1',
-    //             start: '2020-02-17 16:30:00',
-    //             end: '2020-02-17 16:30:00',
-    //             color: '#8883232'
-    //         },
-    //         {
-    //             title: 'Meu Evento 2',
-    //             start: '2020-02-17 17:35:00',
-    //             end: '2020-02-17 18:35:00',
-    //             color: '#EEE000'
-
-    //         },
-    //         {
-    //             title: 'Meu Evento 3',
-    //             start: '2020-02-17 10:35:00',
-    //             end: '2020-02-17 11:35:00',
-    //             color: '#CCC'
-
-    //         }
-    //     ]
-    // });
-    
-    // calendar.setOption('locale', 'pt-br');
-    // calendar.setOption('height', 'auto');
-    // calendar.setOption('width', 'parent');
-    // calendar.setOption('minTime', '08:00:00');
-    // calendar.setOption('maxTime', '19:00:00');
-
-    // var calendar1 = new FullCalendar.Calendar(calendarEl1, {
-    //     defaultDtae: new Date(),
-    //     plugins: [ 'dayGrid', 'interaction', 'list', 'timeGrid' ],
-    //     defaultView: 'timeGridDay',
-    //     header: {
-    //         left: '',
-    //         center: '',
-    //         right: ''    
-    //     },
-    //     editable: true,
-    //     droppable: true,
-    //     allDaySlot: false,
-    //     events:[
-    //         {
-    //             title: 'Meu Evento 1',
-    //             start: '2020-02-17 16:30:00',
-    //             end: '2020-02-17 16:30:00',
-    //             color: '#8883232'
-    //         },
-    //         {
-    //             title: 'Meu Evento 2',
-    //             start: '2020-02-17 17:35:00',
-    //             end: '2020-02-17 18:35:00',
-    //             color: '#EEE000'
-
-    //         },
-    //         {
-    //             title: 'Meu Evento 3',
-    //             start: '2020-02-17 10:35:00',
-    //             end: '2020-02-17 11:35:00',
-    //             color: '#CCC'
-
-    //         }
-    //     ]
-    // });
-    
-    // calendar1.setOption('locale', 'pt-br');
-    // calendar1.setOption('height', 'auto');
-    // calendar1.setOption('width', 'parent');
-    // calendar1.setOption('minTime', '08:00:00');
-    // calendar1.setOption('maxTime', '19:00:00');
-
-    // calendar.render();
-    // calendar1.render();
-   
-    // $('#calendario th').hide();
-    // $('#calendario td.fc-widget-content').hide();
-    // $('#calendario1 th.fc-axis').hide();
-    // $('#calendario1 td.fc-axis').hide();
-    
-    // $('#calendario .fc-day-header.fc-widget-header.fc-wed.fc-today').find('span').text('Paula')
-    // $('#calendario1 .fc-day-header.fc-widget-header.fc-wed.fc-today').find('span').text('Marcos')
-
-    // calendar1.on('dateClick', function(info) {
-    //     console.log('info:', info)
-    //     // console.log('clicked on ' + info.dateStr);
-    // });
-
-    // calendar1.on('eventClick', function(info) {
-    //     console.log('info:', info)
-    //     // console.log('clicked on ' + info.dateStr);
-    // });
-
-  });
-
   $(function () {
 
     $('#dtcalendario').val(dataAtual());
     
     buscaAgendas( $('#dtcalendario').val() );
     
-    $('#dtcalendario').on('blur', function(){
+    $('#dtcalendario').on('blur change', function(){
         if ( $(this).val() != '' ){
-            buscaAgendas( $(this).val() );
+            if ( $('#divAgendas .row .col-lg').length > 0 ){
+                $('#divAgendas .row .col-lg').remove();
+            }
+
+            buscaAgendas( $(this).val() ); 
         }
         
     });
   });
-
-
 
 // eventOverlap vai fazer o bloqueio dos horários que o profissional não puder usar a agenda,
 
@@ -136,37 +26,60 @@ function buscaAgendas(dataRef){
     // limpar o divAgendas
     if ( $('#divAgendas .row .col-lg').length > 0 ){
         $('#divAgendas .row .col-lg').remove();
-    
-    }else{
-
     }
+    
+    var horainicio = '08:00:00', horafim = '20:00:00', iniAux = '0',  fimAux = '0';
+    $.ajax({
+        url: baselink + "/ajax/buscarTodosParametros",
+        type: "POST",
+        data: {
+            tabela: "parametros"
+        },
+        dataType: "json",
+        success: function(data) {
+        //   console.log(data)
+            iniAux = data['hora_limite_operacao'];
+            fimAux =  data['hora_inicio_operacao'];
+            
+        }
+    });    
 
-    var dtref = '';
+    fimAux = $('#divAgendas').attr('data-hora_limite_op');
+    if ( parseInt(fimAux) <= 9 ){
+        fimAux = '0'+ parseInt(fimAux);
+    }
+    fimAux = fimAux+":00:00";
+
+    console.log('ini',iniAux,'fim', fimAux)
+
+    var dtref = '', dtCalend = '';
     // dtref = dataAtual();
     dtref = dataRef;
     dtref = dtref.split('/');
-    dtref = dtref[2]+'-'+dtref[1]+'-'+dtref[0];
-
+    dtCalend = dtref[2]+'-'+dtref[1]+'-'+dtref[0];
+    
     $.ajax( {
         url: baselink + '/ajax/buscarAgendas',
         type:"POST",
         dataType: "json",
         data: {
-            dtref: dtref
+            dtref: dtCalend
         },
         success: function( data ) {
             // console.log('qtd profs evento na data: ', data.length);
             console.log('detalhamento:', data)
             // dar retorno da adição
             if( data.length > 0 ){
-
+                // limpar o divAgendas
+                if ( $('#divAgendas .row .col-lg').length > 0 ){
+                    $('#divAgendas .row .col-lg').remove();
+                }
                for (var i = 0; i < data.length; i++){
-                   if( data[i].eventosDtRef.length > 0 ){
-                        // console.log('qtd prof com event', data[i].nome ,data[i].eventosDtRef.length);
-
+                //    if( data[i].eventosDtRef.length > 0 ){
+                        
                         // criar  o html desses calendars
-                        $('#divAgendas').find('.row').append(`
-                            <div class="col-lg m-0 p-0 agndProf">
+                        $('#divAgendas .row').append(`
+                            <div class='col-lg my-3 p-0 agndProf' >
                                 <div id="calendario`+i+`" ></div>
                             </div>
                         `);
@@ -177,10 +90,11 @@ function buscaAgendas(dataRef){
                             delete(calendarioEl1);
                         }
                         let calendario1 = ''; calendarioEl1 = '';
-                    
+
                         calendarioEl1 = document.getElementById('calendario'+i);
                         calendario1 = new FullCalendar.Calendar(calendarioEl1, {
-                            defaultDtae: new Date(),
+                            // config do calendario
+                            defaultDate: new Date(parseInt(dtref[2]),parseInt(dtref[1])-1, parseInt(dtref[0]) ),
                             plugins: [ 'dayGrid', 'interaction', 'list', 'timeGrid' ],
                             defaultView: 'timeGridDay',
                             header: {
@@ -191,46 +105,87 @@ function buscaAgendas(dataRef){
                             editable: true,
                             droppable: true,
                             allDaySlot: false,
-                            events:data[i].eventosDtRef
+                            locale: 'pt-br',
+                            contentHeight: 'auto',
+                            width: 'parent',
+                            minTime: horainicio,
+                            maxTime: horafim,
+                            // eventos
+                            events:data[i].eventosDtRef,
+                            // funções
+                            eventClick: function(info) {
+                                $('#agendamento').attr('href', baselink+'/agendamentos/editar/'+info.event.extendedProps.idAgnd);
+                                $('#modalEvento').modal('show');
+
+                                console.log('info:', info.event.extendedProps.idAgnd)
+                            }
                         });
-                    
-                        calendario1.setOption('locale', 'pt-br');
-                        calendario1.setOption('height', 'auto');
-                        calendario1.setOption('width', 'parent');
-                        calendario1.setOption('minTime', '08:00:00');
-                        calendario1.setOption('maxTime', '19:00:00');
 
                         // renderizar os calendars
                         calendario1.render();
 
-                        // $('#divAgendas').css('overflow-x', 'auto');        
+                        $('#calendario'+i+' th').find('span').text(data[i].nome);
+                        $('#calendario'+i).attr('data-idProf', data[i].id)
+                        $('#calendario'+i).attr('data-nomeProf', data[i].nome)  
 
-                        if (i == 0 ){
-                            // $('#calendario0 th').hide();
-                            // $('#calendario0 td.fc-widget-content').hide();
-                            $('#calendario'+i+' th').find('span').text(data[i].nome);
-                            
-
-                        }else{
-
-                            $('#calendario'+i+' th.fc-axis').hide();
-                            $('#calendario'+i+' td.fc-axis').hide();
-                            $('#calendario'+i+' th').find('span').text(data[i].nome);
-                        }
-                    
-                    
-                    //acertar a visualização do calendar
-                    }        
+                    // }        
                 }
-               
-               
-               
-               
-
             }else{
                
+                // criar  o html desses 
+                $('#divAgendas table tbody tr').append(`
+                    <th >
+                        <div id="calendarioVazio" ></div>
+                    </th>
+                `);
+               
+                // instanciar os calendars
+                let calendario1 = ''; calendarioEl1 = '';
+            
+                calendarioEl1 = document.getElementById('calendarioVazio');
+                calendario1 = new FullCalendar.Calendar(calendarioEl1, {
+                    defaultDate:  new Date(parseInt(dtref[2]),parseInt(dtref[1])-1, parseInt(dtref[0]) ),
+                    plugins: [ 'dayGrid', 'interaction', 'list', 'timeGrid' ],
+                    defaultView: 'timeGridDay',
+                    header: {
+                        left: '',
+                        center: '',
+                        right: ''    
+                    },
+                    editable: true,
+                    droppable: true,
+                    allDaySlot: false,
+                    locale: 'pt-br',
+                    contentHeight: 'auto',
+                    width: 'parent',
+                    minTime: '08:00:00',
+                    maxTime: '19:00:00',
+                    events:[]
+                });
+            
+                calendario1.render();
+
             }
         }
     } );
 
+}
+
+function dataAtual(){
+    var dt, dia, mes, ano, dtretorno;
+    dt = new Date();
+    dia = dt.getDate();
+    mes = dt.getMonth() + 1;
+    ano = dt.getFullYear();
+
+    if (dia.toString().length == 1) {
+        dia = "0" + dt.getDate();
+    }
+    if (mes.toString().length == 1) {
+        mes = "0" + mes;
+    }
+
+    dtretorno = dia + "/" + mes + "/" + ano;
+
+    return dtretorno;
 }

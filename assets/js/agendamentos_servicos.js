@@ -35,8 +35,27 @@ $(function () {
             if ( $(ele).attr('required') == undefined ){
                
             }else{
-                if( $(ele).val() == '' || $(ele).hasClass('is-valid') == false ){
+                if( $(ele).val() == '' ){
                     id = $(ele).attr('id');
+                }else{
+                    if( $(ele).hasClass('is-valid') == false ){
+                        if ( $(ele).attr('data-anterior') == undefined || $(ele).attr('data-anterior') == '' ){
+                            // tá no adicionar != vazio E não valid E sem data-anterior
+                            id = $(ele).attr('id');
+                        
+                        }else{
+                            // tá no editar != vazio E não valid E tem data-anterior
+                            var anterior = '', atual = '';
+                            anterior = $(ele).attr('data-anterior');
+                            anterior = anterior.toLocaleLowerCase();
+                            atual = $(ele).val();
+                            atual = atual.toLocaleLowerCase();
+                            
+                            if( anterior != atual ){
+                                id = $(ele).attr('id');
+                            }
+                        }
+                    }
                 }
             }     
         });
@@ -93,7 +112,7 @@ $(function () {
             lastInsertId += 1;
 
             $('#eventos tbody')
-                .prepend('<tr class="d-flex flex-column flex-lg-row" data-id="' + lastInsertId + '">' + tds + botoes + '</tr>');
+                .append('<tr class="d-flex flex-column flex-lg-row" data-id="' + lastInsertId + '">' + tds + botoes + '</tr>');
 
         } else {
             // Caso tenha algum valor é por que o contato está sendo editado

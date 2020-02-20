@@ -211,6 +211,7 @@ class Agendamentos extends model {
         $obsAgnd = $requestCompleto['obsAgnd'];
         $alteracoesAgnd = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - CADASTRO";
 
+        // print_r($sql); exit;
         self::db()->query('START TRANSACTION;');
 
         self::db()->query($sql);
@@ -228,13 +229,32 @@ class Agendamentos extends model {
 
             $sqlA = "INSERT INTO agendamentos (id, dt_inicio, id_cliente, cliente, observacao, id_servicos, servicos, alteracoes, situacao) VALUES (DEFAULT,'$dtInicioAgnd','$idClienteAgnd','$clienteAgnd','$obsAgnd','$idservicos','$servicosAgnd','$alteracoesAgnd','ativo')";
 
+            // print_r($sqlA); exit;
             self::db()->query($sqlA);
             $erroA = self::db()->errorInfo();
 
             if(  empty($erroA[2]) ){
-                self::db()->query('COMMIT;');
-                return true;
 
+                $idAgnd = self::db()->lastInsertId();
+                $idservicos2 = explode(',' , $idservicos); 
+                $sqlB = '';
+                for($i=0; $i < $qtdServicos; $i++){
+                    
+                    $sqlB .= "UPDATE eventos SET idagnd = '$idAgnd' WHERE id = '$idservicos2[$i]'; ";  
+                }
+
+                self::db()->query($sqlB);
+                $erroB = self::db()->errorInfo();
+
+                if(  empty($erroB[2]) ){
+                    // print_r($sqlB); exit;
+                    self::db()->query('COMMIT;');
+                    return true;
+                }else{
+                    
+                    self::db()->query('ROLLBACK;');
+                    return false;
+                }    
             }else{
 
                 self::db()->query('ROLLBACK;');
@@ -247,4 +267,117 @@ class Agendamentos extends model {
             return false;
         }
     }
+
+    public function editarEventos($requestCompleto) {
+        // print_r($requestCompleto); exit;
+        $idAgnd = addslashes( $requestCompleto['idAgnd'] );
+        $alteraAgnd = addslashes( $requestCompleto['alteracao'] );
+        
+        
+
+        $request = $requestCompleto['eventos'];
+        $event = new Shared('eventos');
+
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $sql = '';
+        $qtdServicos = count($request);            
+
+        foreach ($request as $linha => $arrayRegistro) {
+
+            $arrayRegistro["alteracoes"] = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - CADASTRO";
+            $arrayRegistro["situacao"] = "ativo";
+            
+            // print_r($arrayRegistro); exit;
+            // $keys = implode(",", array_keys($arrayRegistro));
+            $keys = implode(",", array_keys($event->formataDadosParaBD2($arrayRegistro)));
+            // print_r($arrayRegistro); exit;
+            $values = "'" . implode("','", array_values($event->formataDadosParaBD2($arrayRegistro))) . "'";
+            // print_r($values); exit;
+            $sql .= "INSERT INTO eventos (" . $keys . ") VALUES (" . $values . ");";               
+        }
+
+        // print_r($request[0]['dt_inicio']); exit;
+        
+        $dtInicioAgnd = $request[0]['dt_inicio'];
+        $dtInicioAgnd = explode('/', $dtInicioAgnd);
+        $dtInicioAgnd = $dtInicioAgnd[2].'-'.$dtInicioAgnd[1].'-'.$dtInicioAgnd[0];
+        
+        $idClienteAgnd = $request[0]['id_cliente'];
+        $clienteAgnd = $request[0]['cliente'];
+        $servicosAgnd = $requestCompleto['servicos'];
+        $obsAgnd = $requestCompleto['obsAgnd'];
+        $alteracoesEvnt = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - EDIÇÃO ( desativado )";
+
+        $sqlExclusao = "UPDATE eventos SET situacao = 'excluido' , alteracoes = CONCAT(alteracoes, ' | ', '$alteracoesEvnt') WHERE idagnd = '$idAgnd' ";
+        // print_r($sqlExclusao); exit;
+        self::db()->query('START TRANSACTION;');
+
+        // excluiu os eventos dessse agendamento
+        self::db()->query($sqlExclusao);
+        $erroExc = self::db()->errorInfo();
+
+        if (empty($erroExc[2])){
+
+            // incluiu os eventos alterados dess agendamento
+            self::db()->query($sql);
+            $erro = self::db()->errorInfo();
+
+            if (empty($erro[2])){
+
+                $ultimoIdDepois = self::db()->lastInsertId();
+                $idservicos = '';
+                for($i=0; $i < $qtdServicos; $i++){
+                    $idservicos .= intval($ultimoIdDepois - $i).','; 
+                }
+                $idservicos = substr($idservicos,0, strlen($idservicos) - 1);
+
+                $alteracoesAgnd = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - ALTERAÇÃO >> ".$alteraAgnd;
+                // echo 'ids:    '. $idservicos; exit;   
+                $sqlA = "UPDATE agendamentos SET dt_inicio='$dtInicioAgnd',id_cliente='$idClienteAgnd',cliente='$clienteAgnd',observacao='$obsAgnd',id_servicos='$idservicos',servicos='$servicosAgnd',alteracoes=CONCAT(alteracoes,' | ', '$alteracoesAgnd') WHERE id='$idAgnd'";
+
+                // print_r($sqlA); exit;
+                // atualiza a tabela de agendamentos com os novos ids
+                self::db()->query($sqlA);
+                $erroA = self::db()->errorInfo();
+
+                if(  empty($erroA[2]) ){
+
+                    $idservicos2 = explode(',' , $idservicos); 
+                    $sqlB = '';
+                    for($i=0; $i < $qtdServicos; $i++){
+                        
+                        $sqlB .= "UPDATE eventos SET idagnd = '$idAgnd' WHERE id = '$idservicos2[$i]'; ";  
+                    }
+
+                    self::db()->query($sqlB);
+                    $erroB = self::db()->errorInfo();
+
+                    if(  empty($erroB[2]) ){
+                        // print_r($sqlB); exit;
+                        self::db()->query('COMMIT;');
+                        return true;
+                    }else{
+                        
+                        self::db()->query('ROLLBACK;');
+                        return false;
+                    }    
+                }else{
+
+                    self::db()->query('ROLLBACK;');
+                    return false;
+                }   
+
+            } else {
+
+                self::db()->query('ROLLBACK;');
+                return false;
+            }
+        }else{
+            self::db()->query('ROLLBACK;');
+            return false;
+        }
+
+        
+    }
+
 }

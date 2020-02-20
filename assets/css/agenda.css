@@ -9,25 +9,26 @@
     height: 200px;
 }
 
-section{
+/* section{
     overflow-x: auto;
-}
+} */
 /* fazer os max e min width e max e min height das cols que tem o datepicker e as agendas  */
 /* media query de aparecer ou não o axis das horas - quando for mobile aparecer e quando for screen tirar de toso e deixar do primeiro só */
 #divDtPicker {
     min-width: 200px;
 }
 
-#divAgendas{
-    min-width: 800px;
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
-#divAgendas .agndProfEixo{
-    min-width: 200px;
-}
+/* #divAgendas{ */
+    /* min-width: 800px; */
+    /* overflow-x: auto; */
+    /* overflow-y: hidden; */
+/* } */
 
 #divAgendas .agndProf{
-    min-width: 200px;
+    min-width: 250px;   
+}
+#divAgendas .agndLinha{
+    overflow-y: auto;
+    overflow-x: auto;
+    max-height: 900px;
 }

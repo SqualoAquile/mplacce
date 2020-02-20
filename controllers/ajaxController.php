@@ -912,10 +912,35 @@ class ajaxController extends controller{
     }
     echo json_encode($dados);
   }
+  public function editarEventos(){
+    $dados = array();
+    // print_r($_POST); exit;
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $agnd = new Agendamentos();
+      $dados = $agnd->editarEventos($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
 ///////////////////////////////////////////////////////////////
 /////////////////// AGENDA //////////
 
   public function buscarAgendas(){
+
+    $dados = array();
+    // print_r($_POST); exit;
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $ativs = new Atividades();
+      $dados = $ativs->buscarAgendas($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+
+  public function buscarAgendas2(){
+    echo 'aqui carai memso'; exit;
     $dados = array();
     // print_r($_POST); exit;
     if(isset($_POST) && !empty($_POST)){

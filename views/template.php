@@ -174,7 +174,7 @@
          }
 
       </style>
-
+      <script src="<?php echo BASE_URL?>/assets/js/vendor/moment.min.js" type="text/javascript"></script>
       <script src="<?php echo BASE_URL?>/assets/js/vendor/jquery-3.3.1.min.js" type="text/javascript"></script>
       <script src="<?php echo BASE_URL?>/assets/js/vendor/jquery.mask.js" type="text/javascript"></script>
       <script src="<?php echo BASE_URL?>/assets/js/vendor/jquery.dataTables.min.js" type="text/javascript"></script>

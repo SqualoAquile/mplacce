@@ -36,8 +36,6 @@
     <h1 class="display-4 m-0 text-capitalize font-weight-bold"><?php echo $viewInfo["title"]." ".ucfirst($labelTabela["labelForm"]); ?></h1>
 </header>
 
-<?php $table = false ?>
-
 <section class="mb-5">
     <form id="form-principal" method="POST" class="needs-validation" autocomplete="off" novalidate>
         <div class="row">
@@ -82,11 +80,10 @@
         <div class="col-lg-3">
             <div class="btn btn-primary btn-block" tabindex="0" id="btn_salvar_agnd" > Salvar Agendamentos</div>
         </div>
-    </div>
-    <!-- <div class="row">
-        <div class="col-xl-2 col-lg-3">
-            <label for="main-form" class="btn btn-primary btn-block" tabindex="0">Salvar</label>
+        <div class="col-lg-3">
+            <div class="btn btn-primary btn-block" tabindex="0" id="btn_editar_agnd" > Editar Agendamentos</div>
         </div>
+    </div>
         <?php if (isset($item)): ?>
         <div class="col-xl-2 col-lg-3">
             <button class="btn btn-dark btn-block" type="button" data-toggle="collapse" data-target="#historico" aria-expanded="false" aria-controls="historico">Histórico de Alterações</button>

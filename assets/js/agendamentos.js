@@ -5,6 +5,15 @@
 // criar a tabela de agendamentos e de eventos
 
 $(function () {
+    if ( $('#dt_inicio').attr('data-anterior') != '' ){
+        // tá no editar
+        $('#btn_editar_agnd').parent().show();
+        $('#btn_salvar_agnd').parent().hide();
+    }else{
+        // tá no adicionar
+        $('#btn_editar_agnd').parent().hide();
+        $('#btn_salvar_agnd').parent().show();
+    }
     var servicosProfissional = [];
     $.ajax({
         url: baselink + "/ajax/buscarTodosParametros",
@@ -47,13 +56,6 @@ $(function () {
     });
     $('#dt_inicio').val(dataAtual());
 
-    $( "#cliente" ).blur(function(){
-        if ( $(this).val() == '' ){
-            $(this).attr('data-id', '' );
-            $(this).attr('data-descserv', '' );
-            $(this).attr('data-descprod', '' );
-        }
-    });
     $( "#cliente" ).autocomplete({
         source: function( request, response ) {
         $.ajax( {
@@ -64,7 +66,6 @@ $(function () {
             term: request.term
             },
             success: function( data ) {
-                // console.log('resposta:', data);
                 response( data );
             }
         } );
@@ -76,22 +77,8 @@ $(function () {
             $(this).attr('data-descserv', ui.item.desc_servico );
             $(this).attr('data-descprod', ui.item.desc_produto );
 
-            // $('#agnd_servico').val(ui.item.grupo).blur();
-            // $('#agnd_hora_inicio').val( floatParaPadraoBrasileiro( ui.item.porcent_prof ) + '%').blur();
-            // $('#agnd_duracao').val( floatParaPadraoBrasileiro( ui.item.porcent_casa ) + '%').blur();
-            // $('#agnd_hora_final').val(ui.item.duracao).blur();
-            // $('#serv_preco').val( floatParaPadraoBrasileiro( ui.item.preco ) ).blur();
-
         },
         response: function( event, ui ) {
-            // for (var i = 0; i < ui.content.length; i++){
-            //     if(ui.content[i].label.toLowerCase() == "Calhas Venezianas".toLowerCase() ){
-            //         console.log('a posição desse cara é: ',i, ui.content[i].label);
-            //     }
-                    
-                
-            // }
-            // console.log('fonte:', ui.content);
         }
     });
     $( "#cliente" ).focus(function(event) {
@@ -102,6 +89,18 @@ $(function () {
     $( "#cliente" ).parent('div').addClass('ui-widget');
     $( "#cliente" ).on('click',function(){
         $(this).keyup();
+    });
+    $( "#cliente" ).blur(function(){
+        if ( $(this).val() == '' ){
+            $(this).attr('data-idclie', '' );
+            $(this).attr('data-descserv', '' );
+            $(this).attr('data-descprod', '' );
+        }else{
+            if( ( $(this).attr('data-idclie') == '' || $(this).attr('data-idclie') == undefined ) &&  
+                ( $(this).attr('data-anterior') != '' && $(this).attr('data-anterior') != undefined ) ){
+                    $('#cliente').keyup().focus();   
+            }
+        }
     });
 
     $( "#agnd_profissional" ).autocomplete({
@@ -255,7 +254,7 @@ $(function () {
                 arrayenvio.push({
                         idprof: idprofissional, 
                         profissional: nomeprofissional,
-                        id_cliente: 2,
+                        id_cliente: idcliente,
                         cliente: nomecliente.trim(),
                         tel_cliente: telefonecliente.trim(),
                         servico: $('#eventos tbody tr:eq('+j+') td:eq(1)').text(),
@@ -291,6 +290,9 @@ $(function () {
                             message: 'Agendamento feito com sucesso!',
                             class: 'alert-success'
                         });
+                        setTimeout(function(){
+                            location.reload(true);
+                          }, 2000);
                     }else{
                         Toast({
                             message: 'O Agendamento não foi realizado! Tente Novamente.',
@@ -307,6 +309,162 @@ $(function () {
 
     });
 
+    $('#btn_editar_agnd').on('click', function(){
+        // testes de validação dos inputs
+
+        if ( $('#dt_inicio').val() == '' ){
+            $('#dt_inicio').focus();
+            return false;
+
+        }else{
+            if( $('#dt_inicio').hasClass('is-valid') == false ){
+                if ( $('#dt_inicio').attr('data-anterior') != $('#dt_inicio').val() ){
+                    $('#dt_inicio').focus();
+                    return false;
+                }
+            }
+        }   
+        
+        if ( $('#cliente').val() == '' ){
+            $('#cliente').focus();
+            return false;
+
+        }else{
+            if ( $('#cliente').attr('data-idclie') == '' || $('#cliente').attr('data-idclie') == undefined  ){
+                $('#cliente').focus();
+                return false;
+            }else{
+                if( $('#cliente').hasClass('is-valid') == false ){
+                    $('#cliente').focus();
+                    return false;
+                }
+            }
+        }
+        
+        if ( $('input[name=servicos]').val() == '' ){
+            alert('Nenhum serviço foi selecionado.');
+            $('#agnd_profissional').focus();
+            return false;
+        }
+        
+        // testar se teve alguma alteração
+        var alteracao = '';
+        if( $('#dt_inicio').val() != $('#dt_inicio').attr('data-anterior') ){
+            
+            alteracao += 'DATA INICIAL de ( '+$('#dt_inicio').attr('data-anterior')+' ) para ( '+$('#dt_inicio').val()+' )';
+        }
+        // console.log('dt-ini', alteracao);
+        if( $('#cliente').val() != $('#cliente').attr('data-anterior') ){
+            var cliente = $('#cliente').val();
+                cliente = cliente.split('--')[0];
+                cliente = cliente.toLocaleUpperCase().trim();
+            var dtanterior = $('#cliente').attr('data-anterior');
+                dtanterior = dtanterior.toLocaleUpperCase().trim();
+                // console.log('cli', cliente);
+                // console.log('dt', dtanterior);
+            if ( cliente != dtanterior){
+                alteracao += 'CLIENTE de ( '+$('#cliente').attr('data-anterior')+' ) para ( '+$('#cliente').val().split('--')[0]+' )';
+            }         
+        }
+        // console.log('cli', alteracao);
+        if( $('input[name=servicos]').val() != $('input[name=servicos]').attr('data-anterior') ){
+            alteracao += 'SERVIÇOS de ( '+$('input[name=servicos]').attr('data-anterior')+' ) para ( '+$('input[name=servicos]').val()+' )';
+        }
+        // console.log('dt-serv', alteracao);
+        if ( alteracao == '' ){
+            alert('Não Houveram alterações No Agendamento.');
+            return false;
+        }
+        // console.log('altera:', alteracao);
+        // return false;
+        // pegar o id do agendamento pelo endereço 
+        var idAgnd = '', idaux = '', 
+            idaux =  location.href;
+            idaux = idaux.split('/');
+            idAgnd = parseInt(idaux[idaux.length - 1]);
+        
+            // console.log('id:', idAgnd);
+            // return false;
+        if ( idAgnd == '' || idAgnd == undefined || idAgnd == null){
+            alert('Não foi possível reconhecer o agendamento. Recarregue a página.');
+            return false;
+        }
+        // montar o array que vai ser usado no model
+        var arrayenvio = [];
+
+        for(var j=0; j < $('#eventos tbody tr').length; j++){
+                var idprofis = '', idprofissional = '', nomeprofissional = '';
+                    idprofis = $('#eventos tbody tr:eq('+j+') td:eq(0)').text();
+                    idprofis = idprofis.replace( '(' , '' );
+                    idprofis = idprofis.split(')');
+                    idprofissional = parseInt(idprofis[0]);
+                    nomeprofissional = idprofis[1];
+                
+                var clien = '', idcliente = '', telefonecliente = '', nomecliente = '';
+                    idcliente = parseInt( $('#cliente').attr('data-idclie') );
+                    clien = $('#cliente').val();
+                    clien = clien.split('--');
+                    nomecliente = clien[0];
+                    telefonecliente = clien[1];
+                
+                var servicos = $('input[name=servicos]').val();
+                var observacaoAgendamento = $('#observacao').val();
+
+                arrayenvio.push({
+                        idprof: idprofissional, 
+                        profissional: nomeprofissional,
+                        id_cliente: idcliente,
+                        cliente: nomecliente.trim(),
+                        tel_cliente: telefonecliente.trim(),
+                        servico: $('#eventos tbody tr:eq('+j+') td:eq(1)').text(),
+                        preferencia: $('#eventos tbody tr:eq('+j+') td:eq(2)').text(),
+                        dt_inicio: $('#dt_inicio').val(),
+                        hora_inicio: $('#eventos tbody tr:eq('+j+') td:eq(3)').text(),
+                        dt_fim: $('#dt_inicio').val(),
+                        hora_fim: $('#eventos tbody tr:eq('+j+') td:eq(5)').text(),
+                        duracao: parseInt( $('#eventos tbody tr:eq('+j+') td:eq(4)').text() ),
+                        cor: '#CCCCCC',
+                        status: 'agendado'
+                });
+        }
+        
+        // console.log( 'dados:', arrayenvio);
+        // enviar pro model, fazer a adição
+        if ( confirm("Confirma o(s) Agendamento(s)?") == true ){
+            $.ajax( {
+                url: baselink + '/ajax/editarEventos',
+                type:"POST",
+                dataType: "json",
+                data: {
+                    eventos: arrayenvio,
+                    servicos: servicos,
+                    obsAgnd: observacaoAgendamento,
+                    idAgnd: idAgnd,
+                    alteracao: alteracao
+                },
+                success: function( data ) {
+                    console.log('retorno ajax:', data)
+                    // dar retorno da adição
+                    if(data == true){
+                        Toast({
+                            message: 'Agendamento feito com sucesso!',
+                            class: 'alert-success'
+                        });
+                        setTimeout(function(){
+                            location.reload(true);
+                          }, 2000);
+                    }else{
+                        Toast({
+                            message: 'O Agendamento não foi realizado! Tente Novamente.',
+                            class: 'alert-danger'
+                        });
+                    }
+                }
+            } );
+        }else{
+            return;
+        }
+    });
 });// fim do $(function () {
 
 function calculaHoraFinal(){

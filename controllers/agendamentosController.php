@@ -93,6 +93,7 @@ class agendamentosController extends controller{
             
         }else{
             $dados["item"] = $this->model->infoItem($id); 
+            // print_r($dados["item"]); exit;
             $dados["colunas"] = $this->colunas;
             $dados["viewInfo"] = ["title" => "Editar"];
             $dados["labelTabela"] = $this->shared->labelTabela();

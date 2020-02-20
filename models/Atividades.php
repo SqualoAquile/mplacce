@@ -208,20 +208,20 @@ class Atividades extends model {
                     // print_r($value); exit; 
                     $ativs[] = array(
                         "id" => $value["id"],
-                        "title" => $value["servico"].' '.$value["preferencia"],
+                        "title" => $value["cliente"].' | '.$value["servico"].' '.$value["preferencia"],
                         "start" => $value["dt_inicio"].' '.$value["hora_inicio"].':00',
                         "end" => $value["dt_fim"].' '.$value["hora_fim"].':00',
-                        "color" => $value["cor"]
+                        "color" => $value["cor"],
+                        "idAgnd" => $value["idagnd"]
                     ); 
                 }
             }
-            if( count($ativs) > 0 ){
-                $ativsPorProfissional[] = array(
-                    "id" => $valor['id'],
-                    "nome" => $valor['nome'],
-                    "eventosDtRef" => $ativs
-                ); 
-            }
+            
+            $ativsPorProfissional[] = array(
+                "id" => $valor['id'],
+                "nome" => $valor['nome'],
+                "eventosDtRef" => $ativs
+            ); 
             
         }      
         
