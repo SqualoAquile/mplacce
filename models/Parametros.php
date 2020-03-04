@@ -1009,7 +1009,7 @@ class Parametros extends model {
 
         ///////// nível 4
         $nivel4 = array();
-        $sql1 = "SELECT * FROM `contabeisnivel4` WHERE situacao = 'ativo' ORDER BY movimentacao ASC, nivel1 ASC, nivel2 ASC, nivel3 ASC, nome ASC";
+        $sql1 = "SELECT * FROM `contabeisnivel4` WHERE situacao = 'ativo' ORDER BY nivel1 ASC, movimentacao ASC, nivel2 ASC, nivel3 ASC, nome ASC";
 
         $sql1 = self::db()->query($sql1);
         if($sql1->rowCount() > 0){  
