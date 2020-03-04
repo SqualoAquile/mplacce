@@ -44,51 +44,51 @@
             ]
          ]
       ],
-      [
-         "text" => "Agenda",
-         "icon" => "fas fa-calendar-alt",
-         "permissao" => "%",
-         "link" => "/#",
-         "filhos" => [
-            [
-               "text" => "Agenda",
-               "icon" => "fas fa-calendar",
-               "permissao" => "atividades_ver",
-               "link" => "/atividades/adicionar"
+      // [
+      //    "text" => "Agenda",
+      //    "icon" => "fas fa-calendar-alt",
+      //    "permissao" => "%",
+      //    "link" => "/#",
+      //    "filhos" => [
+      //       [
+      //          "text" => "Agenda",
+      //          "icon" => "fas fa-calendar",
+      //          "permissao" => "atividades_ver",
+      //          "link" => "/atividades/adicionar"
             
-            ],
-            [
-               "text" => "Agendamentos",
-               "icon" => "fas fa-pen",
-               "permissao" => "agendamentos_ver",
-               "link" => "/agendamentos"
-            ]
-         ]
-      ],
+      //       ],
+      //       [
+      //          "text" => "Agendamentos",
+      //          "icon" => "fas fa-pen",
+      //          "permissao" => "agendamentos_ver",
+      //          "link" => "/agendamentos"
+      //       ]
+      //    ]
+      // ],
       [
          "text" => "Financeiro",
          "icon" => "fas fa-money-bill-alt",
          "permissao" => "%",
          "link" => "/#",
          "filhos" => [
-            [
-               "text" => "Lançamentos de Caixa",
-               "icon" => "fas fa-cart-plus",
-               "permissao" => "fluxocaixa_add",
-               "link" => "/fluxocaixa/adicionar"
-            ],
-            [
-               "text" => "Controle de Caixa",
-               "icon" => "fas fa-calculator",
-               "permissao" => "fluxocaixa_ver",
-               "link" => "/fluxocaixa"
-            ],
-            [
-               "text" => "Administradoras de Cartão",
-               "icon" => "fas fa-credit-card",
-               "permissao" => "administradoras_ver",
-               "link" => "/administradoras"
-            ],
+            // [
+            //    "text" => "Lançamentos de Caixa",
+            //    "icon" => "fas fa-cart-plus",
+            //    "permissao" => "fluxocaixa_add",
+            //    "link" => "/fluxocaixa/adicionar"
+            // ],
+            // [
+            //    "text" => "Controle de Caixa",
+            //    "icon" => "fas fa-calculator",
+            //    "permissao" => "fluxocaixa_ver",
+            //    "link" => "/fluxocaixa"
+            // ],
+            // [
+            //    "text" => "Administradoras de Cartão",
+            //    "icon" => "fas fa-credit-card",
+            //    "permissao" => "administradoras_ver",
+            //    "link" => "/administradoras"
+            // ],
             [
                "text" => "Plano de Contas",
                "icon" => "fas fa-align-justify",

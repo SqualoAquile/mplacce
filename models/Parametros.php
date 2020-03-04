@@ -499,15 +499,33 @@ class Parametros extends model {
         $array = array();
         // 
         $sql1 = "UPDATE contabeisnivel1 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE id='$idconta'";
-        // $sql1 = "INSERT INTO contabeisnivel1 (id, movimentacao, nome, alteracoes, situacao) VALUES (DEFAULT,'$movimentacao','$termo','$alteracoes','ativo')";
+        
+        $sql2 = "UPDATE contabeisnivel2 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE nivel1='$idconta'";
+        
+        $sql3 = "UPDATE contabeisnivel3 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE nivel1='$idconta'";
 
-        $sql1 = self::db()->query($sql1);
-        $erro = self::db()->errorInfo();
+        $sql4 = "UPDATE contabeisnivel4 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE nivel1='$idconta'";
+        
+        // print_r($sql1); 
+        self::db()->query('START TRANSACTION;');
+        self::db()->query($sql1);
+        $erro1 = self::db()->errorInfo();
+        
+        self::db()->query($sql2);
+        $erro2 = self::db()->errorInfo();
 
-        if (empty($erro[2])){
+        self::db()->query($sql3);
+        $erro3 = self::db()->errorInfo();
 
+        self::db()->query($sql4);
+        $erro3 = self::db()->errorInfo();
+        
+        if ( empty($erro1[2]) && empty($erro2[2]) && empty($erro3[2]) && empty($erro4[2]) ){
+            self::db()->query('COMMIT;'); 
             return true;
+          
         } else {
+            self::db()->query('ROLLBACK;');
             return false;
         }
     }
@@ -644,15 +662,28 @@ class Parametros extends model {
         $array = array();
         // 
         $sql1 = "UPDATE contabeisnivel2 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE id='$idconta'";
-        // $sql1 = "INSERT INTO contabeisnivel1 (id, movimentacao, nome, alteracoes, situacao) VALUES (DEFAULT,'$movimentacao','$termo','$alteracoes','ativo')";
+        
+        $sql2 = "UPDATE contabeisnivel3 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE nivel2='$idconta'";
 
-        $sql1 = self::db()->query($sql1);
-        $erro = self::db()->errorInfo();
+        $sql3 = "UPDATE contabeisnivel4 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE nivel2='$idconta'";
+        
+        // print_r($sql1); 
+        self::db()->query('START TRANSACTION;');
+        self::db()->query($sql1);
+        $erro1 = self::db()->errorInfo();
+        
+        self::db()->query($sql2);
+        $erro2 = self::db()->errorInfo();
 
-        if (empty($erro[2])){
-
+        self::db()->query($sql3);
+        $erro3 = self::db()->errorInfo();
+        
+        if ( empty($erro1[2]) && empty($erro2[2]) && empty($erro3[2]) ){
+            self::db()->query('COMMIT;'); 
             return true;
+          
         } else {
+            self::db()->query('ROLLBACK;');
             return false;
         }
     }
@@ -796,13 +827,22 @@ class Parametros extends model {
         // 
         $sql1 = "UPDATE contabeisnivel3 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE id='$idconta'";
 
-        $sql1 = self::db()->query($sql1);
-        $erro = self::db()->errorInfo();
-
-        if (empty($erro[2])){
-
+        $sql2 = "UPDATE contabeisnivel4 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE nivel3='$idconta'";
+        
+        // print_r($sql1); 
+        self::db()->query('START TRANSACTION;');
+        self::db()->query($sql1);
+        $erro1 = self::db()->errorInfo();
+        
+        self::db()->query($sql2);
+        $erro2 = self::db()->errorInfo();
+        
+        if ( empty($erro1[2]) && empty($erro2[2]) ){
+            self::db()->query('COMMIT;'); 
             return true;
+          
         } else {
+            self::db()->query('ROLLBACK;');
             return false;
         }
     }
