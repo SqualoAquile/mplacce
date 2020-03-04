@@ -369,4 +369,672 @@ class Parametros extends model {
         return $result;
 
     }
+
+    ///PLANO DE CONTAS NÍVEL 1
+    public function buscaTodosNivel1(){
+        $array = array();
+        $sql1 = "SELECT * FROM `contabeisnivel1` WHERE situacao = 'ativo'";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[$value["id"]] = array(
+                    "id" => $value["id"],
+                    "movimentacao" => $value["movimentacao"],
+                    "nome" => $value["nome"]
+                );     
+            }
+
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+
+    public function buscaNivel1($request){
+        $movimentacao = addslashes($request['mov']);
+        $termo = $request['term'];
+        $array = array();
+        // 
+        $sql1 = "SELECT `id`, `nome` FROM `contabeisnivel1` WHERE situacao = 'ativo' AND movimentacao = '$movimentacao' AND nome LIKE '%$termo%' ORDER BY nome ASC";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[] = array(
+                    "id" => $value["id"],
+                    "label" => $value["nome"],
+                    "value" => $value["nome"]
+                );     
+            }
+
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+    public function confereTermoNivel1($request){
+        $movimentacao = addslashes($request['mov']);
+        $termo = $request['term'];
+        $array = array();
+        // 
+        $sql1 = "SELECT `id`, `nome` FROM `contabeisnivel1` WHERE situacao = 'ativo' AND movimentacao = '$movimentacao' AND nome ='$termo'";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[] = array(
+                    "id" => $value["id"],
+                    "value" => $value["nome"]
+                );     
+            }
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+    public function adicionaNivel1($request){
+        $movimentacao = addslashes($request['movimentacao']);
+        $termo = ucwords( addslashes($request['conta']) );
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - CADASTRO";
+        $array = array();
+        // 
+        $sql1 = "INSERT INTO contabeisnivel1 (id, movimentacao, nome, alteracoes, situacao) VALUES (DEFAULT,'$movimentacao','$termo','$alteracoes','ativo')";
+
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function editaNivel1($request){
+        $movimentacao = addslashes($request['movimentacao']);
+        $termo = ucwords( addslashes($request['conta']) );
+        $dataanterior = ucwords( addslashes($request['dataanterior']) );
+        $idconta = addslashes($request['idconta']);
+
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - EDIÇÃO >> de ( $dataanterior ) para ( $termo )";
+         
+        $sql1 = "UPDATE contabeisnivel1 SET nome='$termo',  alteracoes=CONCAT(alteracoes,' | ', '$alteracoes')WHERE id='$idconta'";
+        // print_r($sql1); exit;
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function excluiNivel1($request){
+        $idconta = addslashes($request['idconta']);
+        
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - EXCLUSÃO";
+        $array = array();
+        // 
+        $sql1 = "UPDATE contabeisnivel1 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE id='$idconta'";
+        // $sql1 = "INSERT INTO contabeisnivel1 (id, movimentacao, nome, alteracoes, situacao) VALUES (DEFAULT,'$movimentacao','$termo','$alteracoes','ativo')";
+
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+    ///PLANO DE CONTAS NÍVEL 2
+    public function buscaTodosNivel2(){
+        $array = array();
+        $sql1 = "SELECT * FROM `contabeisnivel2` WHERE situacao = 'ativo'";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[$value["id"]] = array(
+                    "id" => $value["id"],
+                    "movimentacao" => $value["movimentacao"],
+                    "nome" => $value["nome"]
+                );     
+            }
+
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+
+    public function buscaNivel2($request){
+        $movimentacao = addslashes($request['mov']);
+        $nivel1 = addslashes($request['nivel1']);
+        $termo = $request['term'];
+        $array = array();
+        // 
+        $sql1 = "SELECT `id`, `nome` FROM `contabeisnivel2` WHERE situacao = 'ativo' AND movimentacao = '$movimentacao' AND nivel1 = '$nivel1' AND nome LIKE '%$termo%' ORDER BY nome ASC";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[] = array(
+                    "id" => $value["id"],
+                    "label" => $value["nome"],
+                    "value" => $value["nome"]
+                );     
+            }
+
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+    public function confereTermoNivel2($request){
+        $movimentacao = addslashes($request['mov']);
+        $nivel1 = addslashes($request['nivel1']);
+        $termo = $request['term'];
+        $array = array();
+        // 
+        $sql1 = "SELECT `id`, `nome` FROM `contabeisnivel2` WHERE situacao = 'ativo' AND movimentacao = '$movimentacao' AND nivel1 = '$nivel1' AND nome = '$termo' ORDER BY nome ASC";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[] = array(
+                    "id" => $value["id"],
+                    "value" => $value["nome"]
+                );     
+            }
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+    public function adicionaNivel2($request){
+        $movimentacao = addslashes($request['movimentacao']);
+        $nivel1 = addslashes($request['nivel1']);
+        $termo = ucwords( addslashes( $request['conta'] ));
+        
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - CADASTRO";
+
+        $sql1 = "INSERT INTO contabeisnivel2 (id, movimentacao, nivel1, nome, alteracoes, situacao) VALUES (DEFAULT,'$movimentacao','$nivel1','$termo','$alteracoes','ativo')";
+
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function editaNivel2($request){
+        $movimentacao = addslashes($request['movimentacao']);
+        $nivel1 = addslashes($request['nivel1']);
+        $termo = ucwords( addslashes($request['conta']) );
+        $dataanterior = ucwords( addslashes($request['dataanterior']) );
+        $idconta = addslashes($request['idconta']);
+
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - EDIÇÃO >> de ( $dataanterior ) para ( $termo )";
+         
+        $sql1 = "UPDATE contabeisnivel2 SET nome='$termo',  alteracoes=CONCAT(alteracoes,' | ', '$alteracoes')WHERE id='$idconta'";
+        // print_r($sql1); exit;
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function excluiNivel2($request){
+        $idconta = addslashes($request['idconta']);
+        
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - EXCLUSÃO";
+        $array = array();
+        // 
+        $sql1 = "UPDATE contabeisnivel2 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE id='$idconta'";
+        // $sql1 = "INSERT INTO contabeisnivel1 (id, movimentacao, nome, alteracoes, situacao) VALUES (DEFAULT,'$movimentacao','$termo','$alteracoes','ativo')";
+
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    ///PLANO DE CONTAS NÍVEL 3
+    public function buscaTodosNivel3(){
+        $array = array();
+        $sql1 = "SELECT * FROM `contabeisnivel3` WHERE situacao = 'ativo'";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[$value["id"]] = array(
+                    "id" => $value["id"],
+                    "movimentacao" => $value["movimentacao"],
+                    "nome" => $value["nome"]
+                );     
+            }
+
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+
+    public function buscaNivel3($request){
+        $movimentacao = addslashes($request['mov']);
+        $nivel1 = addslashes($request['nivel1']);
+        $nivel2 = addslashes($request['nivel2']);
+        $termo = $request['term'];
+        $array = array();
+        // 
+        $sql1 = "SELECT `id`, `nome` FROM `contabeisnivel3` WHERE situacao = 'ativo' AND movimentacao = '$movimentacao' AND nivel1 = '$nivel1' AND nivel2 = '$nivel2' AND nome LIKE '%$termo%' ORDER BY nome ASC";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[] = array(
+                    "id" => $value["id"],
+                    "label" => $value["nome"],
+                    "value" => $value["nome"]
+                );     
+            }
+
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+    public function confereTermoNivel3($request){
+        $movimentacao = addslashes($request['mov']);
+        $nivel1 = addslashes($request['nivel1']);
+        $nivel2 = addslashes($request['nivel2']);
+        $termo = $request['term'];
+        $array = array();
+        // 
+        $sql1 = "SELECT `id`, `nome` FROM `contabeisnivel3` WHERE situacao = 'ativo' AND movimentacao = '$movimentacao' AND nivel1 = '$nivel1' AND nivel2 = '$nivel2' AND nome LIKE '%$termo%' ORDER BY nome ASC";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[] = array(
+                    "id" => $value["id"],
+                    "value" => $value["nome"]
+                );     
+            }
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+    public function adicionaNivel3($request){
+        $movimentacao = addslashes($request['movimentacao']);
+        $nivel1 = addslashes($request['nivel1']);
+        $nivel2 = addslashes($request['nivel2']);
+        $termo = ucwords( addslashes( $request['conta'] ));
+        
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - CADASTRO";
+
+        $sql1 = "INSERT INTO contabeisnivel3 (id, movimentacao, nivel1, nivel2, nome, alteracoes, situacao) VALUES (DEFAULT,'$movimentacao','$nivel1','$nivel2','$termo','$alteracoes','ativo')";
+        // print_r($sql1); exit;
+
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function editaNivel3($request){
+        $movimentacao = addslashes($request['movimentacao']);
+        $nivel1 = addslashes($request['nivel1']);
+        $nivel2 = addslashes($request['nivel2']);
+        $termo = ucwords( addslashes($request['conta']) );
+        $dataanterior = ucwords( addslashes($request['dataanterior']) );
+        $idconta = addslashes($request['idconta']);
+
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - EDIÇÃO >> de ( $dataanterior ) para ( $termo )";
+         
+        $sql1 = "UPDATE contabeisnivel3 SET nome='$termo',  alteracoes=CONCAT(alteracoes,' | ', '$alteracoes')WHERE id='$idconta'";
+        // print_r($sql1); exit;
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function excluiNivel3($request){
+        $idconta = addslashes($request['idconta']);
+        
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - EXCLUSÃO";
+        $array = array();
+        // 
+        $sql1 = "UPDATE contabeisnivel3 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE id='$idconta'";
+
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    ///PLANO DE CONTAS NÍVEL 4
+    public function buscaNivel4($request){
+        $movimentacao = addslashes($request['mov']);
+        $nivel1 = addslashes($request['nivel1']);
+        $nivel2 = addslashes($request['nivel2']);
+        $nivel3 = addslashes($request['nivel3']);
+        $termo = $request['term'];
+        $array = array();
+        // 
+        $sql1 = "SELECT `id`, `nome` FROM `contabeisnivel4` WHERE situacao = 'ativo' AND movimentacao = '$movimentacao' AND nivel1 = '$nivel1' AND nivel2 = '$nivel2' AND nivel3 = '$nivel3' AND nome LIKE '%$termo%' ORDER BY nome ASC";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[] = array(
+                    "id" => $value["id"],
+                    "label" => $value["nome"],
+                    "value" => $value["nome"]
+                );     
+            }
+
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+    public function confereTermoNivel4($request){
+        $movimentacao = addslashes($request['mov']);
+        $nivel1 = addslashes($request['nivel1']);
+        $nivel2 = addslashes($request['nivel2']);
+        $nivel3 = addslashes($request['nivel3']);
+        $termo = $request['term'];
+        $array = array();
+        // 
+        $sql1 = "SELECT `id`, `nome` FROM `contabeisnivel4` WHERE situacao = 'ativo' AND movimentacao = '$movimentacao' AND nivel1 = '$nivel1' AND nivel2 = '$nivel2' AND nivel3 = '$nivel3' AND nome LIKE '%$termo%' ORDER BY nome ASC";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[] = array(
+                    "id" => $value["id"],
+                    "value" => $value["nome"]
+                );     
+            }
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+    public function adicionaNivel4($request){
+        $movimentacao = addslashes($request['movimentacao']);
+        $nivel1 = addslashes($request['nivel1']);
+        $nivel2 = addslashes($request['nivel2']);
+        $nivel3 = addslashes($request['nivel3']);
+        $termo = ucwords( addslashes( $request['conta'] ));
+        
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - CADASTRO";
+
+        $sql1 = "INSERT INTO contabeisnivel4 (id, movimentacao, nivel1, nivel2, nivel3, nome, alteracoes, situacao) VALUES (DEFAULT,'$movimentacao','$nivel1','$nivel2','$nivel3','$termo','$alteracoes','ativo')";
+        // print_r($sql1); exit;
+
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function editaNivel4($request){
+        $movimentacao = addslashes($request['movimentacao']);
+        $nivel1 = addslashes($request['nivel1']);
+        $nivel2 = addslashes($request['nivel2']);
+        $nivel3 = addslashes($request['nivel3']);
+        $termo = ucwords( addslashes($request['conta']) );
+        $dataanterior = ucwords( addslashes($request['dataanterior']) );
+        $idconta = addslashes($request['idconta']);
+
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - EDIÇÃO >> de ( $dataanterior ) para ( $termo )";
+         
+        $sql1 = "UPDATE contabeisnivel4 SET nome='$termo',  alteracoes=CONCAT(alteracoes,' | ', '$alteracoes')WHERE id='$idconta'";
+        // print_r($sql1); exit;
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function excluiNivel4($request){
+        $idconta = addslashes($request['idconta']);
+        
+        $ipcliente = $this->permissoes->pegaIPcliente();
+        $alteracoes = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - EXCLUSÃO";
+        $array = array();
+        // 
+        $sql1 = "UPDATE contabeisnivel4 SET alteracoes=CONCAT(alteracoes,' | ', '$alteracoes'),situacao='excluido' WHERE id='$idconta'";
+
+        $sql1 = self::db()->query($sql1);
+        $erro = self::db()->errorInfo();
+
+        if (empty($erro[2])){
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /// TODOS OS NÍVEIS PLANO DE CONTAS
+    public function buscaTodosNiveis(){
+        ////nível 1
+        $nivel1 = array();
+        $sql1 = "SELECT * FROM `contabeisnivel1` WHERE situacao = 'ativo'";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[$value["id"]] = array(
+                    "id" => $value["id"],
+                    "movimentacao" => $value["movimentacao"],
+                    "nome" => $value["nome"]
+                );     
+            }
+
+        }
+
+        $nivel1 = $nomes;
+
+       ////// nível 2
+       $nivel2 = array();
+       $sql1 = "SELECT * FROM `contabeisnivel2` WHERE situacao = 'ativo'";
+
+       $sql1 = self::db()->query($sql1);
+       $nomesAux = array();
+       $nomes = array();
+       if($sql1->rowCount() > 0){  
+           
+           $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+           foreach ($nomesAux as $key => $value) {
+               $nomes[$value["id"]] = array(
+                   "id" => $value["id"],
+                   "movimentacao" => $value["movimentacao"],
+                   "nome" => $value["nome"]
+               );     
+           }
+
+       }
+
+        $nivel2 = $nomes;
+
+        /////// nível 3
+        $nivel3 = array();
+        $sql1 = "SELECT * FROM `contabeisnivel3` WHERE situacao = 'ativo'";
+
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[$value["id"]] = array(
+                    "id" => $value["id"],
+                    "movimentacao" => $value["movimentacao"],
+                    "nome" => $value["nome"]
+                );     
+            }
+
+        }
+
+        $nivel3 = $nomes;
+
+        ///////// nível 4
+        $nivel4 = array();
+        $sql1 = "SELECT * FROM `contabeisnivel4` WHERE situacao = 'ativo' ORDER BY movimentacao ASC, nivel1 ASC, nivel2 ASC, nivel3 ASC, nome ASC";
+
+        $sql1 = self::db()->query($sql1);
+        if($sql1->rowCount() > 0){  
+            $nivel4 = $sql1->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+    //    print_r($nivel1);
+    //    print_r($nivel2);
+    //    print_r($nivel3);
+    /// colocando os nomes no array nivel 4
+        $todos = array();
+        $moviments = array();
+        foreach ($nivel4 as $key => $value) {
+            
+            $todos[$key] = array(
+                "movimentacao" => $value['movimentacao'],
+                "nivel1" => $nivel1[ $value['nivel1'] ]['nome'],
+                "nivel2" => $nivel2[ $value['nivel2'] ]['nome'],
+                "nivel3" => $nivel3[ $value['nivel3'] ]['nome'],
+                "nivel4" => $value['nome'],
+            );
+        
+        }
+       
+    //    print_r($todos);exit;
+        return $todos;
+    }
 }

@@ -80,7 +80,7 @@ function buscaAgendas(dataRef){
                         // criar  o html desses calendars
                         $('#divAgendas .row').append(`
                             <div class='col-lg my-3 p-0 agndProf' >
-                                <div id="calendario`+i+`" ></div>
+                                <div id="calendario`+i+`" data-idprof="`+data[i].id+`" ></div>
                             </div>
                         `);
 
@@ -110,6 +110,7 @@ function buscaAgendas(dataRef){
                             width: 'parent',
                             minTime: horainicio,
                             maxTime: horafim,
+                            
                             // eventos
                             events:data[i].eventosDtRef,
                             // funções
@@ -118,7 +119,33 @@ function buscaAgendas(dataRef){
                                 $('#modalEvento').modal('show');
 
                                 console.log('info:', info.event.extendedProps.idAgnd)
-                            }
+                            },
+                            eventLeave: function(info) {
+                                // console.log('html:' $(this) )
+                                console.log('data-idProf:', $(this).find('.agndProf').children('div').attr('data-idProf'));
+                                console.log('info do Leave:', info )
+                            },
+                            eventReceive: function(info) {
+                                // console.log('info do Receive:', info)
+                                // console.log('data-idProf:', $(this).find('.agndProf').children('div:eq(0)').attr('data-idProf'));
+                                console.log('info do Receive:', info )
+                                let $aa = info.draggedEl;
+                                console.log('info do Receive:', $(this).find('.agndProf') )
+                            },
+                            eventDragStart: function(info) {
+                                // console.log(info)
+                                // console.log('info do Drag Start:', info.event.start)
+                                // console.log('info do Drag Start:', info.event.end)
+                            },
+                            eventDragStop: function(info) {
+                                // console.log('info do Drag Stop:', info.event.start)
+                                // console.log('info do Drag Stop:', info.event.end)
+                            },
+                            eventResize: function(info) {
+                                // console.log('info do Resize:', info)
+                            },
+                            
+
                         });
 
                         // renderizar os calendars

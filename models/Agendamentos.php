@@ -112,36 +112,49 @@ class Agendamentos extends model {
     public function excluir($id){
         if(!empty($id)) {
 
-            $id = addslashes(trim($id));
-
-            //se não achar nenhum usuario associado ao grupo - pode deletar, ou seja, tornar o cadastro situacao=excluído
-            $sql = "SELECT alteracoes FROM ". $this->table ." WHERE id = '$id' AND situacao = 'ativo'";
-            $sql = self::db()->query($sql);
+            $idAgnd = addslashes(trim($id));
             
-            if($sql->rowCount() > 0){  
+            $ipcliente = $this->permissoes->pegaIPcliente();
+            $palter = ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - EXCLUSÃO";
 
-                $sql = $sql->fetch();
-                $palter = $sql["alteracoes"];
-                $ipcliente = $this->permissoes->pegaIPcliente();
-                $palter = $palter." | ".ucwords($_SESSION["nomeUsuario"])." - $ipcliente - ".date('d/m/Y H:i:s')." - EXCLUSÃO";
+            $sql = "UPDATE eventos SET situacao = 'excluido' , alteracoes = CONCAT(alteracoes, ' | ', '$palter') WHERE idagnd = '$idAgnd' ";
 
-                $sqlA = "UPDATE ". $this->table ." SET alteracoes = '$palter', situacao = 'excluido' WHERE id = '$id' ";
+            self::db()->query('START TRANSACTION;');
+            $sql = self::db()->query($sql);
+            $erroExc = self::db()->errorInfo();
+
+            if (empty($erroExc[2])){
+
+                $sqlA = "UPDATE agendamentos SET alteracoes = CONCAT(alteracoes, ' | ', '$palter'), situacao = 'excluido' WHERE id = '$idAgnd' ";
                 self::db()->query($sqlA);
 
                 $erro = self::db()->errorInfo();
 
                 if (empty($erro[2])){
 
+                    self::db()->query('COMMIT;');    
                     $_SESSION["returnMessage"] = [
                         "mensagem" => "Registro deletado com sucesso!",
                         "class" => "alert-success"
                     ];
+
                 } else {
+
+                    self::db()->query('ROLLBACK;');
                     $_SESSION["returnMessage"] = [
                         "mensagem" => "Houve uma falha, tente novamente! <br /> ".$erro[2],
                         "class" => "alert-danger"
                     ];
                 }
+
+            }else{
+
+                self::db()->query('ROLLBACK;');
+                $_SESSION["returnMessage"] = [
+                    "mensagem" => "Houve uma falha, tente novamente! <br /> ".$erro[2],
+                    "class" => "alert-danger"
+                ];
+
             }
         }
     }

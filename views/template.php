@@ -19,18 +19,37 @@
                "link" => "/clientes"
             ],
             [
+               "text" => "Fornecedores",
+               "icon" => "fas fa-industry",
+               "permissao" => "fornecedores_ver",
+               "link" => "/fornecedores"
+            ],
+            [
                "text" => "Profissionais",
                "icon" => "fas fa-users",
                "permissao" => "profissionais_ver",
                "link" => "/profissionais"
-            ]
-            ,
+            ],
             [
                "text" => "Serviços",
                "icon" => "fas fa-boxes",
                "permissao" => "servicos_ver",
                "link" => "/servicos"
             ],
+            [
+               "text" => "Produtos",
+               "icon" => "fas fa-tags",
+               "permissao" => "produtos_ver",
+               "link" => "/produtos"
+            ]
+         ]
+      ],
+      [
+         "text" => "Agenda",
+         "icon" => "fas fa-calendar-alt",
+         "permissao" => "%",
+         "link" => "/#",
+         "filhos" => [
             [
                "text" => "Agenda",
                "icon" => "fas fa-calendar",
@@ -40,46 +59,51 @@
             ],
             [
                "text" => "Agendamentos",
-               "icon" => "fas fa-boxes",
+               "icon" => "fas fa-pen",
                "permissao" => "agendamentos_ver",
                "link" => "/agendamentos"
             ]
          ]
-      ]
-      ,
-      // [
-      //    "text" => "Financeiro",
-      //    "icon" => "fas fa-money-bill-alt",
-      //    "permissao" => "%",
-      //    "link" => "/#",
-      //    "filhos" => [
+      ],
+      [
+         "text" => "Financeiro",
+         "icon" => "fas fa-money-bill-alt",
+         "permissao" => "%",
+         "link" => "/#",
+         "filhos" => [
+            [
+               "text" => "Lançamentos de Caixa",
+               "icon" => "fas fa-cart-plus",
+               "permissao" => "fluxocaixa_add",
+               "link" => "/fluxocaixa/adicionar"
+            ],
+            [
+               "text" => "Controle de Caixa",
+               "icon" => "fas fa-calculator",
+               "permissao" => "fluxocaixa_ver",
+               "link" => "/fluxocaixa"
+            ],
+            [
+               "text" => "Administradoras de Cartão",
+               "icon" => "fas fa-credit-card",
+               "permissao" => "administradoras_ver",
+               "link" => "/administradoras"
+            ],
+            [
+               "text" => "Plano de Contas",
+               "icon" => "fas fa-align-justify",
+               "permissao" => "classifcontabeis_ver",
+               "link" => "/classifcontabeis"
+            ]
+            // ,
       //       [
-      //          "text" => "Administradoras de Cartão",
-      //          "icon" => "fas fa-credit-card",
-      //          "permissao" => "administradoras_ver",
-      //          "link" => "/administradoras"
-      //       ],
-      //       [
-      //          "text" => "Lançamentos de Caixa",
-      //          "icon" => "fas fa-cart-plus",
-      //          "permissao" => "fluxocaixa_add",
-      //          "link" => "/fluxocaixa/adicionar"
-      //       ],
-      //       [
-      //          "text" => "Controle de Caixa",
-      //          "icon" => "fas fa-calculator",
-      //          "permissao" => "fluxocaixa_ver",
-      //          "link" => "/fluxocaixa"
+      //          "text" => "Controle de Saldos",
+      //          "icon" => "fas fa-chart-line",
+      //          "permissao" => "controlesaldos_ver",
+      //          "link" => "/controlesaldos"
       //       ]
-      //       // ,
-      // //       [
-      // //          "text" => "Controle de Saldos",
-      // //          "icon" => "fas fa-chart-line",
-      // //          "permissao" => "controlesaldos_ver",
-      // //          "link" => "/controlesaldos"
-      // //       ]
-      //    ]
-      // ],
+         ]
+      ],
       // [
       //    "text" => "Relatórios",
       //    "icon" => "fas fa-table",

@@ -361,7 +361,16 @@ class ajaxController extends controller{
     echo json_encode($dados);
   }
   
-  /////// PRODUTOS
+  //////////////////////// PRODUTOS
+  public function buscaFornecedores(){
+    $dados = array();
+    $fr = new Fornecedores();
+    if(isset($_POST) && !empty($_POST)){
+        $dados = $fr->nomeFornecedores($_POST);
+    }
+    echo json_encode($dados);
+  }
+  //////////////////////////////////
   public function dataTableAjax(){
     //  print_r($_POST['valorPesq']); exit;
       $shared = new Shared($_POST['module']);
@@ -952,6 +961,236 @@ class ajaxController extends controller{
     echo json_encode($dados);
   }
 
+  /////////////////////////////////////////////
+  //////////////////// CLASSIFICAÇÕES CONTÁBEIS
+
+  ///////// NÍVEL 1
+  public function buscaNivel1(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->buscaNivel1($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function confereTermoNivel1(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->confereTermoNivel1($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function adicionaNivel1(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->adicionaNivel1($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function editaNivel1(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->editaNivel1($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function excluiNivel1(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->excluiNivel1($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+
+  /////////NÍVEL 2
+  public function buscaNivel2(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->buscaNivel2($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function confereTermoNivel2(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->confereTermoNivel2($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function adicionaNivel2(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->adicionaNivel2($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function editaNivel2(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->editaNivel2($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function excluiNivel2(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->excluiNivel2($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+
+  /////////NÍVEL 3
+  public function buscaNivel3(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->buscaNivel3($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function confereTermoNivel3(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->confereTermoNivel3($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function adicionaNivel3(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->adicionaNivel3($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function editaNivel3(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->editaNivel3($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function excluiNivel3(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->excluiNivel3($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+
+  /////////NÍVEL 4
+  public function buscaNivel4(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->buscaNivel4($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function confereTermoNivel4(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->confereTermoNivel4($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function adicionaNivel4(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->adicionaNivel4($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function editaNivel4(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->editaNivel4($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+  public function excluiNivel4(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->excluiNivel4($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
   /////////////////////////////////////////////
   public function buscaEmaileID(){
     $dados = array();
