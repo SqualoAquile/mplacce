@@ -216,6 +216,15 @@ class ajaxController extends controller{
   }
   /////// cadastro de FUNCIONARIOS
   /////// CONTROLE FLUXO DE CAIXA
+  public function buscaFornecedores1(){
+    $dados = array();
+    $fr = new Fornecedores();
+    if(isset($_POST) && !empty($_POST)){
+        $dados = $fr->nomeFornecedores1($_POST);
+    }
+    echo json_encode($dados);
+  }
+
   public function quitarItens(){
     $resp = array();
     $lc = new Lancamentos();
@@ -1187,6 +1196,19 @@ class ajaxController extends controller{
       // print_r($_POST); exit;
       $param = new Parametros();
       $dados = $param->excluiNivel4($_POST);
+      
+    }
+    echo json_encode($dados);
+  }
+
+  //// Busca Detalhe
+  public function buscaDetalhe(){
+    $dados = array();
+    
+    if(isset($_POST) && !empty($_POST)){
+      // print_r($_POST); exit;
+      $param = new Parametros();
+      $dados = $param->buscaDetalhe($_POST);
       
     }
     echo json_encode($dados);

@@ -71,24 +71,24 @@
          "permissao" => "%",
          "link" => "/#",
          "filhos" => [
-            // [
-            //    "text" => "Lançamentos de Caixa",
-            //    "icon" => "fas fa-cart-plus",
-            //    "permissao" => "fluxocaixa_add",
-            //    "link" => "/fluxocaixa/adicionar"
-            // ],
-            // [
-            //    "text" => "Controle de Caixa",
-            //    "icon" => "fas fa-calculator",
-            //    "permissao" => "fluxocaixa_ver",
-            //    "link" => "/fluxocaixa"
-            // ],
-            // [
-            //    "text" => "Administradoras de Cartão",
-            //    "icon" => "fas fa-credit-card",
-            //    "permissao" => "administradoras_ver",
-            //    "link" => "/administradoras"
-            // ],
+            [
+               "text" => "Lançamentos de Caixa",
+               "icon" => "fas fa-cart-plus",
+               "permissao" => "fluxocaixa_add",
+               "link" => "/fluxocaixa/adicionar"
+            ],
+            [
+               "text" => "Controle de Caixa",
+               "icon" => "fas fa-calculator",
+               "permissao" => "fluxocaixa_ver",
+               "link" => "/fluxocaixa"
+            ],
+            [
+               "text" => "Administradoras de Cartão",
+               "icon" => "fas fa-credit-card",
+               "permissao" => "administradoras_ver",
+               "link" => "/administradoras"
+            ],
             [
                "text" => "Plano de Contas",
                "icon" => "fas fa-align-justify",

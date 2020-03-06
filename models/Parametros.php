@@ -1077,4 +1077,40 @@ class Parametros extends model {
     //    print_r($todos);exit;
         return $todos;
     }
+
+    
+    public function buscaDetalhe($request){
+        $movimentacao = ucfirst(addslashes($request['mov']));
+        $nivel1 = addslashes($request['nivel1']);
+        $nivel2 = addslashes($request['nivel2']);
+        $nivel3 = addslashes($request['nivel3']);
+        $nivel4 = addslashes($request['nivel4']);
+        $termo = $request['term'];
+        $array = array();
+        // 
+        $sql1 = "SELECT `id`, `detalhe` FROM `fluxocaixa` WHERE situacao = 'ativo' AND despesa_receita = '$movimentacao' AND ccn1 = '$nivel1' AND ccn2 = '$nivel2' AND ccn3 = '$nivel3' AND ccn4 = '$nivel4' AND detalhe LIKE '%$termo%' GROUP BY detalhe ORDER BY detalhe ASC";
+
+        // print_r($sql1); exit;
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($nomesAux as $key => $value) {
+                $nomes[] = array(
+                    "id" => $value["id"],
+                    "label" => $value["detalhe"],
+                    "value" => $value["detalhe"]
+                );     
+            }
+
+        }
+
+        $array = $nomes;
+
+       return $array;
+    }
+
 }

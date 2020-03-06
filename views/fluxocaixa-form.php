@@ -8,8 +8,10 @@
         logado = '<?php echo $_SESSION['nomeUsuario']?>';
 </script>
 
-<!-- Chama o arquivo específico do módulo, caso não exista,  -->
-<!-- Este javaScript serve para fazer verificações inerentes à cada módulo, por exemplo o radio de Clientes -->
+<script src="<?php echo BASE_URL?>/assets/js/vendor/jquery-ui.min.js" type="text/javascript"></script>
+<script src="<?php echo BASE_URL?>/assets/js/vendor/bootstrap-datepicker.min.js" type="text/javascript"></script>
+<script src="<?php echo BASE_URL?>/assets/js/vendor/bootstrap-datepicker.pt-BR.min.js" type="text/javascript"></script>
+<script src="<?php echo BASE_URL?>/assets/js/principal.js" type="text/javascript"></script>
 <script src="<?php echo BASE_URL?>/assets/js/<?php echo $modulo?>.js" type="text/javascript"></script>
 <?php if (isset($_SESSION["returnMessage"])): ?>
 
@@ -252,7 +254,7 @@
                                         class="form-control" 
                                         name="<?php echo lcfirst($value["Field"]) ?>" 
                                         value="<?php echo isset($item) && !empty($item) ? $item[$value["Field"]] : "" ?>"
-                                        data-unico="<?php echo array_key_exists("unico", $value["Comment"]) && $value["Comment"]["unico"]  == true ? "unico" : "" ?>"
+                                        data-unico="<?php echo array_key_exists("unico", $value["Comment"]) && $value["Comment"]["unico"]  == 'true' ? "unico" : "" ?>"
                                         data-anterior="<?php echo isset($item) ? $item[$value["Field"]] : "" ?>"
                                         id="<?php echo $value['Field'] ?>"
                                         <?php echo $value['Null'] == "NO" ? "required" : "" ?>
@@ -270,14 +272,14 @@
                     <?php endif ?>
                 <?php endif ?>
             <?php endforeach ?>
-            <div class="col-lg-6" style="order:14;">
+            <div class="col-lg-3" style="order:18;">
                 <div class="form-group">
                     <label for="dia_venc" class="fluxocaixa font-weight-bold" ><span>* Dia Vencimento</span></label>
                     <select id="dia_venc" 
                             name="dia_venc"
                             class="form-control"
                             data-anterior=""
-                            tabindex="14"
+                            tabindex="18"
                             data-mascara_validacao = "false"   
                     >
                         <option value="" selected >Selecione</option>
@@ -288,22 +290,22 @@
                 </div>
             </div>
 
-            <div class="col-lg-6" style="order:16;">
+            <div class="col-lg-3" style="order:18;">
                 <div class="form-group">
                     <label for="taxa-cartao" class="fluxocaixa font-weight-bold"><span>* Taxa do Cartão</span></label>
-                    <input type="text" class="form-control" name="taxa-cartao" value="" id="taxa-cartao" maxlength="20" tabindex="16" data-mascara_validacao="porcentagem" data-podeZero="true" disabled="disabled" data-anterior=""/>
+                    <input type="text" class="form-control" name="taxa-cartao" value="" id="taxa-cartao" maxlength="20" tabindex="18" data-mascara_validacao="porcentagem" data-podeZero="true" disabled="disabled" data-anterior=""/>
                 </div>
             </div>
 
-            <div class="col-lg-6" style="order:16;">
+            <div class="col-lg-3" style="order:18;">
                 <div class="form-group">
                     <label for="custo_financ" class="fluxocaixa font-weight-bold" ><span>* Custo Financeiro</span></label>
-                    <input type="text" class="form-control" name="custo_financ" value="" id="custo_financ" maxlength="20" tabindex="16" data-mascara_validacao="monetario" data-podeZero="true" disabled="disabled" data-anterior=""/>
+                    <input type="text" class="form-control" name="custo_financ" value="" id="custo_financ" maxlength="20" tabindex="18" data-mascara_validacao="monetario" data-podeZero="true" disabled="disabled" data-anterior=""/>
                 </div>
             </div>
-            <div class="col-lg-3" style="order:18;">
+            <div class="col-lg-3" style="order:25;">
                  <div class="form-group">
-                    <div class="btn btn-primary btn-block" tabindex="18" id="btn_incluir"> Incluir </div>                                                 
+                    <div class="btn btn-primary btn-block" tabindex="24" id="btn_incluir"> Incluir </div>                                                 
                  </div>                                       
             </div>
             <div class="offset-xl-9 col-xl-3 col-lg-3 offset-lg-9 text-lg-right order-0 order-lg-0">

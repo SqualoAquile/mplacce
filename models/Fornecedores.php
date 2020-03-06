@@ -178,4 +178,34 @@ class Fornecedores extends model {
        return $array;
     } 
 
+    public function nomeFornecedores1($request){
+        $termo = trim(addslashes($request["term"]));
+        $array = array();
+        // 
+        $sql1 = "SELECT * FROM `fornecedores` WHERE situacao = 'ativo' AND forn_ativo = 'SIM' AND ( nome_fantasia LIKE '%$termo%' OR razao_social LIKE '%$termo%' ) ORDER BY nome_fantasia ASC";
+
+        // echo $sql1; exit;
+        $sql1 = self::db()->query($sql1);
+        $nomesAux = array();
+        $nomes = array();
+        if($sql1->rowCount() > 0){  
+            
+            $nomesAux = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+            // print_r($nomesAux); exit;
+            foreach ($nomesAux as $key => $value) {
+                $nomes[] = array(
+                    "id" => $value["id"],
+                    "label" => $value["nome_fantasia"]." -- ".$value["razao_social"],
+                    "value" => $value["nome_fantasia"],
+                );     
+            }
+        }
+
+        $array = $nomes;
+        // $array = $nomesAux;
+
+       return $array;
+    } 
+
 }

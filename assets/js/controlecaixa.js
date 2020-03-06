@@ -49,7 +49,7 @@ $(function () {
             valor_total: 5,
             data_vencimento: 6,
             status: 15,
-            observacao: 20
+            observacao: 24
         },
         $checados,
         $aQuiatares;

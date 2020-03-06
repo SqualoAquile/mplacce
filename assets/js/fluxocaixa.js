@@ -18,43 +18,297 @@ $(function () {
     
     // console.log('colunas e form: ', apareceLancamento)
     // console.log('conta_analitica: ', apareceLancamento.indexOf('conta_analitica')) 
+    var colunasComOrdemForm = [];
+    for ( var j=0; j < colunas.length; j++){
+        if( colunas[j].Comment.ordem_form != undefined ){
+            var indx = parseInt( colunas[j].Comment.ordem_form );
+            colunasComOrdemForm[indx] = {
+                Field:colunas[j].Field,
+                Null:colunas[j].Null,
+                form:colunas[j].Comment.form,
+                type:colunas[j].Comment.type
+            }
+        }     
+    }
+    var primeiro = colunasComOrdemForm.shift();
+    // var ultimo = colunasComOrdemForm.pop();
+    // console.log('colunasordem', colunasComOrdemForm);
 
     $('input[type=radio]').on('change', function(){
-        var id_mov = '';
+        var movimentacao = '';
         
         if( $('#Despesa').is(':checked') == true ){
-            id_mov = 1;
+            movimentacao = 'despesa';
         }else{
-            id_mov = 2;
+            movimentacao = 'receita';
         }
         // console.log(id_mov)
+        $('#ccn4').empty().append('<option value="" selected  >Selecione</option>');
+        $('#ccn4').val('').blur();
+        $('#ccn3').empty().append('<option value="" selected  >Selecione</option>');
+        $('#ccn3').val('').blur();
+        $('#ccn2').empty().append('<option value="" selected  >Selecione</option>'); 
+        $('#ccn2').val('').blur();
+        $('#ccn1').empty().append('<option value="" selected  >Selecione</option>'); 
+        $('#ccn1').val('').blur();
 
-        $.ajax({
-                url: baselink + '/ajax/buscaAnaliticas',
-                type: 'POST',
-                data: {
-                    id: id_mov 
-                },
-                dataType: 'json',
-                success: function (dado) {
-                    // console.log(dado);
-                    if(dado != ''){
-                        $('#conta_analitica').empty().append('<option value="" selected  >Selecione</option>') 
-                        for(var i=0; i< dado.length; i++){  
-                            $('#conta_analitica').append("<option value='"+dado[i]['id']+"' >"+dado[i]['nome']+"</option>")
-                        }
-                    }else{
-                        alert('Não foram encontrados centros de custos. Cadastre-os!');  
+        $.ajax( {
+            url: baselink + '/ajax/buscaNivel1',
+            type:"POST",
+            dataType: "json",
+            data: {
+                mov:movimentacao,
+                term: ''
+            },
+            success: function( data ) {
+                if(data != ''){
+                    $('#ccn1').empty().append('<option value="" selected  >Selecione</option>') 
+                    for(var i=0; i< data.length; i++){  
+                        $('#ccn1').append("<option value='"+data[i]['id']+"' >"+data[i]['value']+"</option>")
                     }
-                                                                
+                }else{
+                    alert('Não foram encontradas contas do nível 1.');
+                    $('#ccn1').empty().append('<option value="" selected  >Selecione</option>')  ;
+                }
             }
-        });
+        } );
     });
 
+    ////// começa os níveis contábeis
+    $('#ccn1').blur(function(){
+        var movimentacao = '';
+        
+        if( $('#Despesa').is(':checked') == true ){
+            movimentacao = 'despesa';
+        }else{
+            movimentacao = 'receita';
+        }
+
+        if( $(this).val() == '' ){
+            $('#ccn4').empty().append('<option value="" selected  >Selecione</option>');
+            $('#ccn4').val('').blur();
+            $('#ccn3').empty().append('<option value="" selected  >Selecione</option>');
+            $('#ccn3').val('').blur();
+            $('#ccn2').empty().append('<option value="" selected  >Selecione</option>'); 
+            $('#ccn2').val('').blur();
+        
+        }else{
+            // popular o select
+            var nivel1 = $('#ccn1').val();
+            $.ajax( {
+                url: baselink + '/ajax/buscaNivel2',
+                type:"POST",
+                dataType: "json",
+                data: {
+                    mov:movimentacao,
+                    nivel1:nivel1,
+                    term: ''
+                },
+                success: function( data ) {
+                    if(data != ''){
+                        $('#ccn2').empty().append('<option value="" selected  >Selecione</option>') 
+                        for(var i=0; i< data.length; i++){  
+                            $('#ccn2').append("<option value='"+data[i]['id']+"' >"+data[i]['value']+"</option>")
+                        }
+                    }else{
+                        $('#ccn2').empty().append('<option value="" selected  >Selecione</option>')  
+                    }
+                }
+            } );
+
+            $('#ccn2').blur();
+            $('#ccn3').blur();
+            $('#ccn4').blur();
+        }
+    });
+
+    $('#ccn2').blur(function(){
+        if( $(this).val() == '' ){
+            $('#ccn4').empty().append('<option value="" selected  >Selecione</option>');
+            $('#ccn4').val('').blur();
+            $('#ccn3').empty().append('<option value="" selected  >Selecione</option>');
+            $('#ccn3').val('').blur();
+
+        }else{
+            var movimentacao = '';
+        
+            if( $('#Despesa').is(':checked') == true ){
+                movimentacao = 'despesa';
+            }else{
+                movimentacao = 'receita';
+            }
+            var nivel1 = $('#ccn1').val(), nivel2 = $('#ccn2').val();
+
+             $.ajax( {
+                    url: baselink + '/ajax/buscaNivel3',
+                    type:"POST",
+                    dataType: "json",
+                    data: {
+                        mov:movimentacao,
+                        nivel1:nivel1,
+                        nivel2:nivel2,
+                        term: ''
+                    },
+                    success: function( data ) {
+                        if(data != ''){
+                            $('#ccn3').empty().append('<option value="" selected  >Selecione</option>') 
+                            for(var i=0; i< data.length; i++){  
+                                $('#ccn3').append("<option value='"+data[i]['id']+"' >"+data[i]['value']+"</option>")
+                            }
+                        }else{
+                            $('#ccn3').empty().append('<option value="" selected  >Selecione</option>')  
+                        }
+                    }
+                } );
+                $('#ccn3').blur();
+                $('#ccn4').blur();
+        }
+    });
+
+    $('#ccn3').blur(function(){
+        if( $(this).val() == '' ){
+            $('#ccn4').empty().append('<option value="" selected  >Selecione</option>');
+            $('#ccn4').val('').blur();
+
+        }else{
+            var movimentacao = '';
+        
+            if( $('#Despesa').is(':checked') == true ){
+                movimentacao = 'despesa';
+            }else{
+                movimentacao = 'receita';
+            }
+            var nivel1 = $('#ccn1').val(), nivel2 = $('#ccn2').val(), nivel3 = $('#ccn3').val();
+
+             $.ajax( {
+                    url: baselink + '/ajax/buscaNivel4',
+                    type:"POST",
+                    dataType: "json",
+                    data: {
+                        mov:movimentacao,
+                        nivel1:nivel1,
+                        nivel2:nivel2,
+                        nivel3:nivel3,
+                        term: ''
+                    },
+                    success: function( data ) {
+                        if(data != ''){
+                            $('#ccn4').empty().append('<option value="" selected  >Selecione</option>') 
+                            for(var i=0; i< data.length; i++){  
+                                $('#ccn4').append("<option value='"+data[i]['id']+"' >"+data[i]['value']+"</option>")
+                            }
+                        }else{
+                            $('#ccn4').empty().append('<option value="" selected  >Selecione</option>')  
+                        }
+                    }
+                } );
+                $('#ccn4').blur();
+        }
+    });
+    
+    $( "#detalhe" ).autocomplete({
+        source: function( request, response ) {
+            if ( $('#ccn1').val() == '' ){
+                alert('Defina o Nível 1.');
+                $('#ccn1').focus();
+    
+            }else if ( $('#ccn2').val() == '' ){
+                alert('Defina o Nível 2.');
+                $('#ccn2').focus();
+    
+            }else if ( $('#ccn3').val() == '' ){
+                alert('Defina o Nível 3.');
+                $('#ccn3').focus();
+    
+            }else if ( $('#ccn4').val() == '' ){
+                alert('Defina o Nível 4.');
+                $('#ccn4').focus();
+    
+            }else{
+                var movimentacao = '';
+            
+                if( $('#Despesa').is(':checked') == true ){
+                    movimentacao = 'despesa';
+                }else{
+                    movimentacao = 'receita';
+                }
+                var nivel1 = $('#ccn1').find(':selected').text(), 
+                    nivel2 = $('#ccn2').find(':selected').text(),
+                    nivel3 = $('#ccn3').find(':selected').text(),
+                    nivel4 = $('#ccn4').find(':selected').text();
+
+                $.ajax( {
+                    url: baselink + '/ajax/buscaDetalhe',
+                    type:"POST",
+                    dataType: "json",
+                    data: {
+                        mov:movimentacao,
+                        nivel1:nivel1,
+                        nivel2:nivel2,
+                        nivel3:nivel3,
+                        nivel4:nivel4,
+                        term: request.term.trim(),
+                    },
+                    success: function( data ) {
+                        response( data );
+                    }
+                } );
+            }    
+        },
+        minLength: 2,
+        select: function( event, ui ) {
+        },
+        response: function( event, ui ) {
+        }
+    });
+    $( "#detalhe" ).focus(function(event) {
+        if ( $('#ccn1').val() == '' ){
+            alert('Defina o Nível 1.');
+            $('#ccn1').focus();
+
+        }else if ( $('#ccn2').val() == '' ){
+            alert('Defina o Nível 2.');
+            $('#ccn2').focus();
+
+        }else if ( $('#ccn3').val() == '' ){
+            alert('Defina o Nível 3.');
+            $('#ccn3').focus();
+
+        }else if ( $('#ccn4').val() == '' ){
+            alert('Defina o Nível 4.');
+            $('#ccn4').focus();
+
+        }else{
+            var termo = "";
+            termo = $(this).val().trim();
+            $(this).autocomplete( "search" , termo );
+        }
+    });
+    $( "#detalhe" ).parent('div').addClass('ui-widget');
+    $( "#detalhe" ).on('click',function(){
+        if ( $('#ccn1').val() == '' ){
+            alert('Defina o Nível 1.');
+            $('#ccn1').focus();
+
+        }else if ( $('#ccn2').val() == '' ){
+            alert('Defina o Nível 2.');
+            $('#ccn2').focus();
+
+        }else if ( $('#ccn3').val() == '' ){
+            alert('Defina o Nível 3.');
+            $('#ccn3').focus();
+
+        }else if ( $('#ccn4').val() == '' ){
+            alert('Defina o Nível 4.');
+            $('#ccn4').focus();
+
+        }else{
+            $(this).keyup();
+        }
+    });
+    
     //só para teste de programação
     $('#Receita').click();
-
-    $('#conta_analitica').empty().append('<option value="" selected  >Selecione</option>');
 
     $('#favorecido').parent().parent().find('span').text('Pago Por');
 
@@ -102,82 +356,81 @@ $(function () {
     $('input[type=radio]').change(function () {
         
         $("#forma_pgto").val("").removeClass('is-valid is-invalid').siblings('.invalid-feedback').remove();
-        $("#conta_sintetica").val("").removeClass('is-valid is-invalid').siblings('.invalid-feedback').remove();
-        $("#conta_analitica").val("").removeClass('is-valid is-invalid').siblings('.invalid-feedback').remove();
-        $('#conta_analitica').empty().append('<option value="" selected  >Selecione</option>');
         limpaCondPgto();
 
         if ($("#Receita").is(":checked")) {            
 
             //troca a base de informações do dropdown do favorecido
             $('#favorecido').parent().parent().find('span').text('Pago Por');
-
-            $('.relacional-dropdown-input').each(function () {
-
-                var $this = $(this),
-                    $relacionalDropdown = $this.parents('.relacional-dropdown-wrapper').find('.relacional-dropdown'),
-                    campo = 'nome';
-                    tabela = 'clientes';
-
-                    $.ajax({
-                        url: baselink + '/ajax/getRelacionalDropdown',
-                        type: 'POST',
-                        data: {
-                            tabela: tabela,
-                            campo: campo
-                        },
-                        dataType: 'json',
-                        success: function (data) {
-
-                            var htmlDropdown = '';
-                            data.forEach(element => {
-                                htmlDropdown += `
-                                    <div class="list-group-item list-group-item-action relacional-dropdown-element">` + element[campo] + `</div>
-                                `;
-                            });
-
-                            $relacionalDropdown.find('.dropdown-menu-wrapper').html(htmlDropdown);
-                        }
-                    });
-                });
-
+            $( "#favorecido" ).autocomplete({
+                source: function( request, response ) {
+                $.ajax( { 
+                    url: baselink + '/ajax/buscaClientes',
+                    type:"POST",
+                    dataType: "json",
+                    data: {
+                        term: request.term.trim()
+                    },
+                    success: function( data ) {
+                        response( data );
+                    }
+                } );
+                },
+                minLength: 2,
+                select: function( event, ui ) {
+                },
+                response: function( event, ui ) {
+                }
+            });
+            $( "#favorecido" ).focus(function(event) {
+                var termo = "";
+                termo = $(this).val().trim();
+                $(this).autocomplete( "search" , termo );
+            });
+            $( "#favorecido" ).parent('div').addClass('ui-widget');
+            $( "#favorecido" ).on('click',function(){
+                $(this).keyup();
+            });
+            $( "#favorecido" ).blur(function(){});
+            
 
         } else {
 
             //troca a base de informações do dropdown do favorecido
             $('#favorecido').parent().parent().find('span').text('Favorecido');
-
-            $('.relacional-dropdown-input').each(function () {
-
-                var $this = $(this),
-                    $relacionalDropdown = $this.parents('.relacional-dropdown-wrapper').find('.relacional-dropdown'),
-                    campo = 'nome_fantasia';
-                    tabela = 'fornecedores';
-
-                $.ajax({
-                    url: baselink + '/ajax/getRelacionalDropdown',
-                    type: 'POST',
+            $( "#favorecido" ).autocomplete({
+                source: function( request, response ) {
+                $.ajax( { 
+                    url: baselink + '/ajax/buscaFornecedores1',
+                    type:"POST",
+                    dataType: "json",
                     data: {
-                        tabela: tabela,
-                        campo: campo
+                        term: request.term.trim()
                     },
-                    dataType: 'json',
-                    success: function (data) {
-
-                        var htmlDropdown = '';
-                        data.forEach(element => {
-                            htmlDropdown += `
-                                <div class="list-group-item list-group-item-action relacional-dropdown-element">` + element[campo] + `</div>
-                            `;
-                        });
-
-                        $relacionalDropdown.find('.dropdown-menu-wrapper').html(htmlDropdown);
+                    success: function( data ) {
+                        response( data );
                     }
-                });
+                } );
+                },
+                minLength: 2,
+                select: function( event, ui ) {
+                },
+                response: function( event, ui ) {
+                }
             });
+            $( "#favorecido" ).focus(function(event) {
+                var termo = "";
+                termo = $(this).val().trim();
+                $(this).autocomplete( "search" , termo );
+            });
+            $( "#favorecido" ).parent('div').addClass('ui-widget');
+            $( "#favorecido" ).on('click',function(){
+                $(this).keyup();
+            });
+            $( "#favorecido" ).blur(function(){});
         }
     });
-
+    $('input[type=radio]').change();
     $('#data_operacao').on('change blur', function(){
         if($("#cond_pgto").find(':selected').val() == 'À Vista' ){
             $("#cond_pgto").change();
@@ -252,36 +505,6 @@ $(function () {
                 .attr("disabled", "disabled");
         }
     });
-
-    function limpaCondPgto() {
-        $('#cond_pgto')     .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
-        $('#cond_pgto')     .siblings('.invalid-feedback').remove();
-
-        $("#adm_cartao")    .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
-        $("#adm_cartao")    .parent().parent().hide();
-        $("#adm_cartao")    .siblings('.invalid-feedback').remove();
-
-        $("#bandeira")      .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
-        $("#bandeira")      .parent().parent().hide();
-        $("#bandeira")      .siblings('.invalid-feedback').remove();
-
-        $("#nro_parcela")   .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
-        $("#nro_parcela")   .parent().parent().hide();
-        $("#nro_parcela")   .siblings('.invalid-feedback').remove();
-
-        $("#dia_venc")      .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
-        $("#dia_venc")      .parent().parent().hide();
-        $("#dia_venc")      .siblings('.invalid-feedback').remove();
-
-        $("#taxa-cartao")   .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
-        $("#taxa-cartao")   .parent().parent().hide();
-        $("#taxa-cartao")   .siblings('.invalid-feedback').remove();
-
-        $("#custo_financ")  .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
-        $("#custo_financ")  .parent().parent().hide();
-        $("#custo_financ")  .siblings('.invalid-feedback').remove();
-        
-    }
 
     $('#cond_pgto').change(function () {
         
@@ -486,6 +709,36 @@ $(function () {
         limparCampos();
     });
 
+    function limpaCondPgto() {
+        $('#cond_pgto')     .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
+        $('#cond_pgto')     .siblings('.invalid-feedback').remove();
+
+        $("#adm_cartao")    .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
+        $("#adm_cartao")    .parent().parent().hide();
+        $("#adm_cartao")    .siblings('.invalid-feedback').remove();
+
+        $("#bandeira")      .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
+        $("#bandeira")      .parent().parent().hide();
+        $("#bandeira")      .siblings('.invalid-feedback').remove();
+
+        $("#nro_parcela")   .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
+        $("#nro_parcela")   .parent().parent().hide();
+        $("#nro_parcela")   .siblings('.invalid-feedback').remove();
+
+        $("#dia_venc")      .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
+        $("#dia_venc")      .parent().parent().hide();
+        $("#dia_venc")      .siblings('.invalid-feedback').remove();
+
+        $("#taxa-cartao")   .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
+        $("#taxa-cartao")   .parent().parent().hide();
+        $("#taxa-cartao")   .siblings('.invalid-feedback').remove();
+
+        $("#custo_financ")  .val("").attr("disabled", "disabled").removeClass('is-valid is-invalid');
+        $("#custo_financ")  .parent().parent().hide();
+        $("#custo_financ")  .siblings('.invalid-feedback').remove();
+        
+    }
+
     function calculatxcartao() {
         
         $('#taxa-cartao').val(0);
@@ -568,55 +821,53 @@ $(function () {
     }
 
     function confirmaPreenchimento() {
+        var colunasComOrdemForm = [];
+        for ( var j=0; j < colunas.length; j++){
+            if( colunas[j].Comment.ordem_form != undefined ){
+                var indx = parseInt( colunas[j].Comment.ordem_form );
+                colunasComOrdemForm[indx] = {
+                    Field:colunas[j].Field,
+                    Null:colunas[j].Null,
+                    form:colunas[j].Comment.form,
+                    type:colunas[j].Comment.type
+                }
+            }     
+        }
+        var primeiro = colunasComOrdemForm.shift();
+        // console.log('colunasordem', colunasComOrdemForm);
         // testa se o preenchimento dos campos necessários está ok
-            // if( $("#conta_sintetica").find(':selected').val() == "" ){
-            //     $("#conta_sintetica").focus();
-            //     return;
-            // }
-        if( $("#conta_analitica").find(':selected').val() == "" ){
-            $("#conta_analitica").focus();
-            return;
-        }
-        if( $("#conta_corrente").find(':selected').val() == "" ){
-            $("#conta_corrente").focus();
-            return;
-        }
-        if( $("#detalhe").val() == "" ){
-            $("#detalhe").focus();
-            return;
-        }
-        if( $("#nro_nf").val() != '' && $('#data_emissao_nf').val() == '' ){
-            $("#data_emissao_nf").focus();
-            return;
-        }else if( $("#nro_nf").val() == '' && $('#data_emissao_nf').val() != '' ){
-            $("#nro_nf").focus();
-            return;
-        }
+        for (var k=0; k < colunasComOrdemForm.length; k++){
+            
+            if (    colunasComOrdemForm[k].Null == 'NO' && 
+                    colunasComOrdemForm[k].form == 'true' && 
+                    colunasComOrdemForm[k].type != 'hidden' &&
+                    $('#'+colunasComOrdemForm[k].Field).is(':visible') == true ){
+                
+                if( colunasComOrdemForm[k].type == 'relacional' ){
+                    if ( $('#'+colunasComOrdemForm[k].Field).find(':selected').val() == '' ){
+                        $('#'+colunasComOrdemForm[k].Field).focus();
+                        // console.log(colunasComOrdemForm[k].Field);
+                        return false;
+                    }
+                }else if ( colunasComOrdemForm[k].type == 'text' ){
+                    if ( $('#'+colunasComOrdemForm[k].Field).val() == '' ){
+                        $('#'+colunasComOrdemForm[k].Field).focus();
+                        // console.log(colunasComOrdemForm[k].Field);
+                        return false;
+                    }else{
+                        if ( $('#'+colunasComOrdemForm[k].Field).hasClass('is-valid') == false ){
+                            $('#'+colunasComOrdemForm[k].Field).focus();
+                            // console.log(colunasComOrdemForm[k].Field);
+                            return false;
+                        }
+                    }
+                }else{
 
-        if( $("#quem_lancou").find(':selected').val() == "" ){
-            $("#quem_lancou").focus();
-            return;
+                }
+            }       
         }
-        if( $("#favorecido").val() == "" || $("#favorecido").siblings('.invalid-feedback').is(':visible') ){
-            $("#favorecido").focus();
-            return;
-        }
-        if( $("#data_operacao").val() == "" ){
-            $("#data_operacao").focus();
-            return;
-        }
-        if( $("#valor_total").val() == "" ){
-            $("#valor_total").focus();
-            return;
-        }
-        if( $("#forma_pgto").find(':selected').val() == "" ){
-            $("#forma_pgto").focus();             
-            return;
-        }
-        if( $("#cond_pgto").find(':selected').val() == "" ){
-            $("#cond_pgto").focus();             
-            return;
-        }
+        // console.log('sai do for')
+        /// 
         if( $("#dia_venc").find(':selected').val() == "" ){
             $("#dia_venc").focus();             
             return;
@@ -644,8 +895,11 @@ $(function () {
             }
         }else{
             if($('#forma_pgto').find(':selected').val() == 'Cartão Crédito' || $('#forma_pgto').find(':selected').val() == 'Cartão Débito' ){
-                if( $("#adm_cartao").find(':selected').val() == "" || $("#bandeira").find(':selected').val() == "" ){
-                    $("#forma_pgto").focus();             
+                if( $("#adm_cartao").find(':selected').val() == "" ){
+                    $("#adm_cartao").focus();             
+                    return;
+                } else if( $("#bandeira").find(':selected').val() == "" ){
+                    $("#bandeira").focus();             
                     return;
                 }
             }else{
@@ -657,7 +911,7 @@ $(function () {
         }
 
         //início da inserção da nova linha          
-        var movimentacao, nropedido, nronf, dtemissaonf, sintetica, analitica, contacorrente, detalhe, quemlancou, favorecido, dtoperacao, valortotal, formapgto, condpgto, nroparcela, diavenc, admcartao, bandeira, observacao, distdias;
+        var movimentacao, nropedido, nronf, dtemissaonf, ccn1, ccn2, ccn3, ccn4, contacorrente, detalhe, quemlancou, favorecido, dtoperacao, valortotal, formapgto, condpgto, nroparcela, diavenc, admcartao, bandeira, observacao, distdias;
         if ($("#Receita").is(":checked")) {
             movimentacao = "Receita";
         } else {
@@ -682,8 +936,10 @@ $(function () {
             dtemissaonf = "";
         }
         
-        sintetica = $("#conta_sintetica").find(":selected").val();
-        analitica = $("#conta_analitica").find(":selected").text();
+        ccn1 = $("#ccn1").find(":selected").text();
+        ccn2 = $("#ccn2").find(":selected").text();
+        ccn3 = $("#ccn3").find(":selected").text();
+        ccn4 = $("#ccn4").find(":selected").text();
         contacorrente = $("#conta_corrente").find(":selected").val();
         detalhe = $("#detalhe").val();
         quemlancou = $("#quem_lancou").val();
@@ -753,7 +1009,7 @@ $(function () {
 
         // lança o valor da receita ou despesa
         var linha = new Array();
-        linha = lancaFluxo(movimentacao, nropedido, nronf, dtemissaonf, sintetica, analitica, contacorrente, detalhe, quemlancou, favorecido, dtoperacao, valortotal, formapgto, condpgto, nroparcela, diavenc, admcartao, bandeira, observacao, distdias, apareceLancamento); 
+        linha = lancaFluxo(movimentacao, nropedido, nronf, dtemissaonf, ccn1, ccn2, ccn3, ccn4, contacorrente, detalhe, quemlancou, favorecido, dtoperacao, valortotal, formapgto, condpgto, nroparcela, diavenc, admcartao, bandeira, observacao, distdias, apareceLancamento); 
           
         if (linha.length > 1) {
             for (var i = 0; i < linha.length; i++) {
@@ -768,7 +1024,16 @@ $(function () {
         if (custoAux > 0) {
             //testar se já tem na tabela os itens selecionados   
             var linhab = new Array();
-            linhab = lancaFluxo('Despesa', nropedido, nronf, dtemissaonf, sintetica, 'Despesa Financeira', contacorrente, 'Taxa - ' + formapgto + ' - ' + detalhe, quemlancou, favorecido, dtoperacao, custoAux, formapgto, condpgto, nroparcela, diavenc, admcartao, bandeira, observacao, distdias, apareceLancamento); 
+            if( formapgto.indexOf('cartão') > 0 ){
+                ccn2 = 'Despesas Operacionais';
+                ccn3 = 'Despesas Financeiras';
+                ccn4 = 'Administradoras de Cartão';
+            }else{
+                ccn2 = 'Despesas Operacionais';
+                ccn3 = 'Despesas Financeiras';
+                ccn4 = 'Despesas Financeiras';
+            }
+            linhab = lancaFluxo('Despesa', nropedido, nronf, dtemissaonf, ccn1, ccn2, ccn3, ccn4, contacorrente, 'Taxa - ' + formapgto + ' - ' + detalhe, quemlancou, favorecido, dtoperacao, custoAux, formapgto, condpgto, nroparcela, diavenc, admcartao, bandeira, observacao, distdias, apareceLancamento); 
             if (linhab.length > 1) {
                 for (var i = 0; i < linhab.length; i++) {
                     $('#tabela_lancamento tbody').append(linhab[i]);
@@ -796,23 +1061,21 @@ $(function () {
         $("#quem_lancou").removeClass('is-invalid is-valid');
         $("#detalhe").val('').removeClass('is-invalid is-valid');
         $("#conta_corrente").val('').removeClass('is-invalid is-valid');
-        $("#conta_sintetica").val('').removeClass('is-invalid is-valid');
-        $("#conta_analitica").val('').removeClass('is-invalid is-valid');
-        $('#conta_analitica').empty().append('<option value="" selected  >Selecione</option>');
         $("#forma_pgto").val('').change().removeClass('is-invalid is-valid');
         $("#nro_pedido").val('').removeClass('is-invalid is-valid');
         $("#nro_nf").val('').removeClass('is-invalid is-valid');
         $("#data_emissao_nf").val('').removeClass('is-invalid is-valid');
+        $('#ccn1').val('').blur();
 
         $('#form-principal').removeClass('was-validated');
         $("#Receita").click().focus();
         $("#Receita").parent().parent().removeClass('is-invalid is-valid');
         $("#cond_pgto").removeClass('is-invalid is-valid');
-        $("#observacao").removeClass('is-invalid is-valid');
+        $("#observacao").val('').removeClass('is-invalid is-valid');
 
     }
 
-     $('#form_lancamento').on('submit', function(e){
+    $('#form_lancamento').on('submit', function(e){
         if( confirm('Tem Certeza?') == false ){
             e.preventDefault();
             return;
@@ -1347,7 +1610,7 @@ $(function () {
         };
     }
 
-    function lancaFluxo(movimentacao, nropedido, nronf, dataemissaonf, sintetica, analitica, contacorrente, detalhe, quemlancou, favorecido, dtoperacao, valortotal, formapgto, condpgto, nroparcela, diavenc, admcartao, bandeira, observacao, distdias = 0, apareceLancamento = [], dtVencLncVnd = '') {
+    function lancaFluxo(movimentacao, nropedido, nronf, dataemissaonf, ccn1, ccn2, ccn3, ccn4, contacorrente, detalhe, quemlancou, favorecido, dtoperacao, valortotal, formapgto, condpgto, nroparcela, diavenc, admcartao, bandeira, observacao, distdias = 0, apareceLancamento = [], dtVencLncVnd = '') {
         // console.log('foi acionado lancaFluxo'); 
         /////////////////////////// LANÇAMENTO INTEIRO FEITO A VISTA - EXCLUINDO RECEITA DE CARTÃO DÉBITO
         if ((condpgto == "À Vista" && formapgto != "Cartão Débito" && formapgto != "Cartão Crédito" ) || ( formapgto == 'Cartão Débito' && bandeira == '') ){
@@ -1361,16 +1624,12 @@ $(function () {
                 linha   += "<td>" + "<div class='btn btn-sm btn-danger mr-1' onclick='excluir(this)' data-ident=" + randomico + " '><i class='fas fa-trash-alt'></i></div>" 
                                   + "<div class='btn btn-primary btn-sm ml-1' onclick='editar(this)' data-ident=" + randomico + " '><i class='fas fa-edit'></i></div>" 
                         + "</td>";
+                
                 linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[despesa_receita]'  value='" + movimentacao + "' />" +"</td>";
 
-                if( apareceLancamento.indexOf('conta_sintetica') > 0 ){
-                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[conta_sintetica]'  value='" + sintetica + "'    />" +"</td>";
+                if( apareceLancamento.indexOf('ccn4') > 0 ){
+                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn4]'  value='" + ccn4 + "'    />" +"</td>";
                 }
-                
-                if( apareceLancamento.indexOf('conta_analitica') > 0 ){
-                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[conta_analitica]'  value='" + analitica + "'    />" +"</td>";
-                }
-                
 
                 linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[detalhe]'          value='" + detalhe + "' />"      +"</td>";
 
@@ -1393,25 +1652,36 @@ $(function () {
 
                 linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_quitacao]'    value='" + dtoperacao + "' />"   +"</td>";
 
-                if( apareceLancamento.indexOf('nro_pedido') > 0 ){
-                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[nro_pedido]'       value='" + nropedido + "' />"    +"</td>";
-                }
-
-                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[conta_corrente]'   value='" + contacorrente + "'/>" +"</td>";
-
-                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[adm_cartao]'       value='" + admcartao +"' />"     +"</td>";
-
-                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[bandeira]'         value='" + bandeira +"' />"      +"</td>";
-
                 if( apareceLancamento.indexOf('favorecido') > 0 ){
                     linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[favorecido]'       value='" + favorecido +"' />"    +"</td>";
                 }
                 
-                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[status]'           value=     'Quitado' />"         +"</td>";
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[conta_corrente]'   value='" + contacorrente + "'/>" +"</td>";
+
 
                 linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[quem_lancou]'      value='" + quemlancou +"' />"    +"</td>";
+
+                if( apareceLancamento.indexOf('nro_pedido') > 0 ){
+                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[nro_pedido]'       value='" + nropedido + "' />"    +"</td>";
+                }
+
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[status]'           value=     'Quitado' />"         +"</td>";
+
+                if( apareceLancamento.indexOf('ccn1') > 0 ){
+                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn1]'  value='" + ccn1 + "'    />" +"</td>";
+                }
                 
-                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_entrada_sistema]' value='" +dtentrada+"'/>"    +"</td>";
+                if( apareceLancamento.indexOf('ccn2') > 0 ){
+                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn2]'  value='" + ccn2 + "'    />" +"</td>";
+                }
+
+                if( apareceLancamento.indexOf('ccn3') > 0 ){
+                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn3]'  value='" + ccn3 + "'    />" +"</td>";
+                }
+
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[adm_cartao]'       value='" + admcartao +"' />"     +"</td>";
+
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[bandeira]'         value='" + bandeira +"' />"      +"</td>";
 
                 if( apareceLancamento.indexOf('nro_nf') > 0 ){
                     linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[nro_nf]'           value='" + nronf +"'/>"          +"</td>";
@@ -1419,13 +1689,13 @@ $(function () {
                 
                 if( apareceLancamento.indexOf('data_emissao_nf') > 0 ){
                     linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_emissao_nf]'  value='" + dataemissaonf +"'/>"  +"</td>";
-                }
+                }              
                 
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_entrada_sistema]' value='" +dtentrada+"'/>"    +"</td>";
+
                 linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[observacao]'       value='" + observacao +"' />"    +"</td>";
-            
-            
+
             arraylinhas.push(linha);
-            
             return arraylinhas;
         
         /////////////////////////// LANÇAMENTO INTEIRO FEITO EM UMA VEZ - DISTÂNCIA DO VENCIMENTO EM DIAS
@@ -1442,67 +1712,76 @@ $(function () {
                 linha += "<td>" + "<div class='btn btn-sm btn-danger mr-1' onclick='excluir(this)' data-ident=" + randomico + " '><i class='fas fa-trash-alt'></i></div>" 
                                 + "<div class='btn btn-primary btn-sm ml-1' onclick='editar(this)' data-ident=" + randomico + " '><i class='fas fa-edit'></i></div>" 
                       + "</td>";
-            linha += "<td>" + "<input name='linha"+randomico+"[despesa_receita]'       value='" + movimentacao + "'  type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
+            ///
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[despesa_receita]'  value='" + movimentacao + "' />" +"</td>";
 
-            if( apareceLancamento.indexOf('conta_sintetica') > 0 ){
-                linha += "<td>" + "<input name='linha"+randomico+"[conta_sintetica]'       value='" + sintetica + "'     type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            }   
-            
-            if( apareceLancamento.indexOf('conta_analitica') > 0 ){
-                linha += "<td>" + "<input name='linha"+randomico+"[conta_analitica]'       value='" + analitica + "'     type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
+            if( apareceLancamento.indexOf('ccn4') > 0 ){
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn4]'  value='" + ccn4 + "'    />" +"</td>";
             }
-            
 
-            linha += "<td>" + "<input name='linha"+randomico+"[detalhe]'               value='" + detalhe + "'       size ='auto' type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[detalhe]'          value='" + detalhe + "' />"      +"</td>";
+
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_operacao]'    value='" + dtoperacao + "' />"   +"</td>";
+
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled data-mascara_validacao='monetario' data-podeZero='false' required maxlength='20' "
+                            + "name='linha"+randomico+"[valor_total]' value='" + valortotal + "' data-anterior='"+ valortotal +"' ' />"
+                    +"</td>";
             
-            linha += "<td>" + "<input name='linha"+randomico+"[data_operacao]'         value='" + dtoperacao + "'    type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            
-            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled data-mascara_validacao='monetario' data-podeZero='false' required maxlenght='20' "
-                            + "name='linha"+randomico+"[valor_total]' value='" + valortotal + "' data-anterior='"+ valortotal +"' />"
-                  + "</td>";
-            
-                  linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled data-mascara_validacao='data' maxlenght='10' required "
-                            + "name='linha"+randomico+"[data_vencimento]' value ='" + dtvenc + "' data-anterior='"+ dtvenc +"' data-dtop='" + dtoperacao + "' />"   
-                  + "</td>";
-            
-            linha += "<td>" + "<input name='linha"+randomico+"[forma_pgto]'             value='" + formapgto + "'     type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            
-            linha += "<td>" + "<input name='linha"+randomico+"[cond_pgto]'              value='" + condpgto + "'      type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            
-            linha += "<td>" + "<input name='linha"+randomico+"[nro_parcela]'               value=     '1|1'              type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            
-            linha += "<td>" + "<input name='linha"+randomico+"[data_quitacao]'         value=     ''                 type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            
-            if( apareceLancamento.indexOf('nro_pedido') > 0 ){
-                linha += "<td>" + "<input name='linha"+randomico+"[nro_pedido]'            value='" + nropedido + "'     type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            }
-            
-            linha += "<td>" + "<input name='linha"+randomico+"[conta_corrente]'        value='" + contacorrente + "' type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            
-            linha += "<td>" + "<input name='linha"+randomico+"[adm_cartao]'            value='" + admcartao +"'      type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            
-            linha += "<td>" + "<input name='linha"+randomico+"[bandeira]'              value='" + bandeira +"'       type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled data-mascara_validacao='data' maxlenght='10' required "
+                + "name='linha"+randomico+"[data_vencimento]' value ='" + dtvenc + "' data-anterior='"+ dtvenc +"' data-dtop='" + dtoperacao + "' />"   
+                + "</td>";
+
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[forma_pgto]'        value='" + formapgto + "' />"    +"</td>";
+
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[cond_pgto]'         value='" + condpgto + "' />"     +"</td>";
+
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[nro_parcela]'          value=     '1|1' />"             +"</td>";
+
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_quitacao]'    value='" + dtoperacao + "' />"   +"</td>";
+
             if( apareceLancamento.indexOf('favorecido') > 0 ){
-                linha += "<td>" + "<input name='linha"+randomico+"[favorecido]'            value='" + favorecido +"'     type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[favorecido]'       value='" + favorecido +"' />"    +"</td>";
             }
-                        
-            linha += "<td>" + "<input name='linha"+randomico+"[status]'                value=     'A Quitar'         type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
             
-            linha += "<td>" + "<input name='linha"+randomico+"[quem_lancou]'           value='" + quemlancou +"'     type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[conta_corrente]'   value='" + contacorrente + "'/>" +"</td>";
+
+
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[quem_lancou]'      value='" + quemlancou +"' />"    +"</td>";
+
+            if( apareceLancamento.indexOf('nro_pedido') > 0 ){
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[nro_pedido]'       value='" + nropedido + "' />"    +"</td>";
+            }
+
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[status]'           value=     'A Quitar' />"         +"</td>";
+
+            if( apareceLancamento.indexOf('ccn1') > 0 ){
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn1]'  value='" + ccn1 + "'    />" +"</td>";
+            }
             
-            linha += "<td>" + "<input name='linha"+randomico+"[data_entrada_sistema]'  value='" +dtentrada+"'        type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            
+            if( apareceLancamento.indexOf('ccn2') > 0 ){
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn2]'  value='" + ccn2 + "'    />" +"</td>";
+            }
+
+            if( apareceLancamento.indexOf('ccn3') > 0 ){
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn3]'  value='" + ccn3 + "'    />" +"</td>";
+            }
+
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[adm_cartao]'       value='" + admcartao +"' />"     +"</td>";
+
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[bandeira]'         value='" + bandeira +"' />"      +"</td>";
+
             if( apareceLancamento.indexOf('nro_nf') > 0 ){
-                linha += "<td>" + "<input name='linha"+randomico+"[nro_nf]'                value='" + nronf +"'          type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[nro_nf]'           value='" + nronf +"'/>"          +"</td>";
             }
             
             if( apareceLancamento.indexOf('data_emissao_nf') > 0 ){
-                linha += "<td>" + "<input name='linha"+randomico+"[data_emissao_nf]'       value='" + dataemissaonf +"'  type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            }
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_emissao_nf]'  value='" + dataemissaonf +"'/>"  +"</td>";
+            }              
             
-            linha += "<td>" + "<input name='linha"+randomico+"[observacao]'            value='" + observacao +"'     type='text' class='form-control-plaintext' readonly disabled required  />" +"</td>";
-            
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_entrada_sistema]' value='" +dtentrada+"'/>"    +"</td>";
+
+            linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[observacao]'       value='" + observacao +"' />"    +"</td>";
+            ////          
             linha += "</tr>";
 
             arraylinhas.push(linha);
@@ -1545,15 +1824,10 @@ $(function () {
                                 + "<div class='btn btn-primary btn-sm ml-1' onclick='editar(this)' data-ident=" + randomico + " '><i class='fas fa-edit'></i></div>" 
                       + "</td>";
                 linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[despesa_receita]'  value='" + movimentacao + "' />"               +"</td>";
-
-                if( apareceLancamento.indexOf('conta_sintetica') > 0 ){
-                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[conta_sintetica]'  value='" + sintetica + "' />"                  +"</td>";
-                }
                 
-                if( apareceLancamento.indexOf('conta_analitica') > 0 ){
-                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[conta_analitica]'  value='" + analitica + "' />"                  +"</td>";
+                if( apareceLancamento.indexOf('ccn4') > 0 ){
+                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn4]'  value='" + ccn4 + "' />"           +"</td>";
                 }
-                
 
                 linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[detalhe]'          value='" + detalhe + "' />"                    +"</td>";
                 
@@ -1584,33 +1858,45 @@ $(function () {
                 
                 linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_quitacao]'    value=     ''    />"                           +"</td>";
                 
+                if( apareceLancamento.indexOf('favorecido') > 0 ){
+                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[favorecido]'       value='" + favorecido +"' />"                  +"</td>";
+                }
+                
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[conta_corrente]'   value='" + contacorrente + "'/>"               +"</td>";
+
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[quem_lancou]'      value='" + quemlancou +"' />"                  +"</td>";
+
                 if( apareceLancamento.indexOf('nro_pedido') > 0 ){
                     linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[nro_pedido]'       value='" + nropedido + "' />"                  +"</td>";
                 }
-                                
-                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[conta_corrente]'   value='" + contacorrente + "'/>"               +"</td>";
+                
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[status]'           value=     'A Quitar' />"                      +"</td>";
+                
+                if( apareceLancamento.indexOf('ccn1') > 0 ){
+                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn1]'  value='" + ccn1 + "' />"           +"</td>";
+                }
+
+                if( apareceLancamento.indexOf('ccn2') > 0 ){
+                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn2]'  value='" + ccn2 + "' />"           +"</td>";
+                }
+
+                if( apareceLancamento.indexOf('ccn3') > 0 ){
+                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[ccn3]'  value='" + ccn3 + "' />"           +"</td>";
+                }
                 
                 linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[adm_cartao]'       value='" + admcartao +"' />"                   +"</td>";
                 
                 linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[bandeira]'         value='" + bandeira +"' />"                    +"</td>";
                 
-                if( apareceLancamento.indexOf('favorecido') > 0 ){
-                    linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[favorecido]'       value='" + favorecido +"' />"                  +"</td>";
-                }
-                
-                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[status]'           value=     'A Quitar' />"                      +"</td>";
-                
-                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[quem_lancou]'      value='" + quemlancou +"' />"                  +"</td>";
-                
-                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_entrada_sistema]' value='" +dtentrada+"'/>"                +"</td>";
-                
-                if( apareceLancamento.indexOf('favorecido') > 0 ){
+                if( apareceLancamento.indexOf('nro_nf') > 0 ){
                     linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[nro_nf]'           value='" + nronf +"'/>"                        +"</td>";
                 }
                 
-                if( apareceLancamento.indexOf('favorecido') > 0 ){
+                if( apareceLancamento.indexOf('data_emissao_nf') > 0 ){
                     linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_emissao_nf]'  value='" + dataemissaonf +"'/>"                +"</td>";
                 }
+
+                linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[data_entrada_sistema]' value='" +dtentrada+"'/>"                +"</td>";
                 
                 linha += "<td>" + "<input type='text' class='form-control-plaintext' readonly disabled required name='linha"+randomico+"[observacao]'       value='" + observacao +"' />"                  +"</td>";
                 
